@@ -1,6 +1,10 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously, use_key_in_widget_constructors, prefer_const_constructors_in_immutables
 
-import 'package:chihebapp2/screens/feedbackImages_screen.dart';
+import 'dart:io';
+
+import 'package:chihebapp2/widgets/addComment.dart';
+import 'package:chihebapp2/widgets/choosePictureType.dart';
+import 'package:chihebapp2/widgets/feedbackImages.dart';
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:chihebapp2/widgets/backAppbar.dart';
 import 'package:chihebapp2/widgets/errorMessage.dart';
@@ -9,7 +13,7 @@ import 'package:chihebapp2/widgets/yourMessageWidget.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CommentsScreen extends StatefulWidget {
@@ -31,11 +35,14 @@ class _CommentsScreenState extends State<CommentsScreen> {
   TextEditingController messageController = TextEditingController();
   bool show = false;
   bool user = true;
+  File? _photo;
+  String photo = "";
+  ImagePicker imagePicker = ImagePicker();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: backAppBar(context, 'Commentaires'),
+      appBar: backAppBar(context, widget.entreprise),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,21 +73,6 @@ class _CommentsScreenState extends State<CommentsScreen> {
                 onPressed: widget.delete,
               ),
             ),
-            Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: RichText(
-                    overflow: TextOverflow.ellipsis,
-                    text: TextSpan(
-                        text: 'Pseudo: ',
-                        style: TextStyle(color: darkColor),
-                        children: [
-                          TextSpan(
-                            style: TextStyle(
-                                color: primaryColor,
-                                fontWeight: FontWeight.w600),
-                            text: widget.entreprise,
-                          )
-                        ]))),
             Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                 child: Text(
@@ -113,32 +105,20 @@ class _CommentsScreenState extends State<CommentsScreen> {
                               },
                           )
                         ]))),
-            GestureDetector(
-              onTap: (){
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => FeedbackImagesScreen()));
-              },
-              child: Padding(
-                padding: EdgeInsets.only(left: 20.w,top: 10.h),
-                child: Row(
-                  children: [
-                    Icon(FontAwesomeIcons.image,color: primaryColor,),
-                    SizedBox(
-                      width: 5.w,
-                    ),
-                    Text(
-                      'Voir les photos',
-                      style: TextStyle(fontSize: 16.sp,decoration: TextDecoration.underline),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            SizedBox(height: 10.h),
+            FeedbackImages(),
             SizedBox(
               height: 10.h,
             ),
+            Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                child: Text(
+                  'Comentaires:',
+                  style: TextStyle(
+                      fontSize: 25.sp,
+                      color: primaryColor,
+                      fontWeight: FontWeight.w700),
+                )),
             ListView.builder(
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
@@ -170,56 +150,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
           ],
         ),
       ),
-      bottomSheet: Container(
-        height: 70.h,
-        decoration: BoxDecoration(
-            color: primaryColor,
-            borderRadius: BorderRadius.only(
-                topRight: Radius.circular(18.r),
-                topLeft: Radius.circular(18.r))),
-        child: Padding(
-          padding: EdgeInsets.all(10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: TextField(
-                  cursorColor: primaryColor,
-                  controller: messageController,
-                  decoration: InputDecoration(
-                    fillColor: Colors.transparent,
-                    filled: true,
-                    border: InputBorder.none,
-                    hintText: 'Message...',
-                    hintStyle: TextStyle(
-                        color: silverColor,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(18.r),
-                      borderSide: BorderSide(color: lightColor, width: 3.w),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(18.r),
-                      borderSide: BorderSide(color: lightColor, width: 3.w),
-                    ),
-                  ),
-                  style: TextStyle(color: primaryColor, fontSize: 16.sp),
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  // addReclamation();
-                },
-                icon: Icon(
-                  Icons.send,
-                  size: 40,
-                  color: lightColor,
-                ),
-              )
-            ],
-          ),
-        ),
+      bottomSheet: AddComment(messageController, () {}
       ),
     );
   }

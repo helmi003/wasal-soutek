@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_final_fields, unnecessary_null_comparison
 
 import 'dart:io';
 
@@ -32,7 +32,7 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
   List items = ["Je recommande", "Je ne recommande pas"];
   String selectedItem = "";
   String selectedItemError = "";
-  File? _photo;
+  List<XFile> photos = [];
   String photo = "";
   ImagePicker imagePicker = ImagePicker();
   @override
@@ -57,14 +57,73 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
               ),
             ),
             SizedBox(height: 20.h),
-            TextFieldWidget(companyName, "Nom d'association *", companyNameError),
+            TextFieldWidget(
+                companyName, "Nom d'association *", companyNameError),
             TextFieldWidget(link, "Lien d'association", ""),
             DropDownWidget(items, (value) {
               setState(() {
                 selectedItem = value;
               });
-            }, 'Choisissez une option *', null, selectedItemError,selectedItem),
+            }, 'Choisissez une option *', null, selectedItemError,
+                selectedItem),
             CustomTextArea(message, 'Message...', messageError),
+            photos.isEmpty
+                ? SizedBox()
+                : Padding(
+                    padding: EdgeInsets.only(right: 5.w),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: GestureDetector(
+                        onTap: () {
+                          clearAll();
+                        },
+                        child: Text(
+                          'Clear all',
+                          style: TextStyle(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w500,
+                              color: primaryColor),
+                        ),
+                      ),
+                    ),
+                  ),
+            photos.isEmpty
+                ? SizedBox()
+                : Container(
+                    decoration: BoxDecoration(
+                      border: Border.symmetric(
+                        horizontal: BorderSide(width: 2, color: darkColor),
+                      ),
+                    ),
+                    height: 110.h,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: photos.length,
+                      itemBuilder: (context, index) => Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 2.w),
+                        child: GestureDetector(
+                          onTap: () {
+                            removePhoto(index);
+                          },
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Image.file(
+                                File(photos[index].path),
+                                width: 100.w,
+                                height: 100.h,
+                              ),
+                              Icon(
+                                FontAwesomeIcons.xmark,
+                                color: redColor,
+                                size: 25.h,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
             GestureDetector(
               child: Stack(
                 alignment: Alignment.center,
@@ -126,11 +185,32 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
   }
 
   takephoto(ImageSource source) async {
-    final pick = await imagePicker.pickImage(source: source);
-    if (pick != null) {
-      setState(() {
-        _photo = File(pick.path);
-      });
+    if (source == ImageSource.camera) {
+      final pick = await imagePicker.pickImage(source: source);
+      if (pick != null) {
+        setState(() {
+          photos.add(pick);
+        });
+      }
+    } else {
+      final pick = await imagePicker.pickMultiImage();
+      if (pick != null) {
+        setState(() {
+          photos.addAll(pick);
+        });
+      }
     }
+  }
+
+  void removePhoto(int index) {
+    setState(() {
+      photos.removeAt(index);
+    });
+  }
+
+  void clearAll() {
+    setState(() {
+      photos = [];
+    });
   }
 }

@@ -2,19 +2,18 @@
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:chihebapp2/utils/colors.dart';
-import 'package:chihebapp2/widgets/backAppbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class FeedbackImagesScreen extends StatefulWidget {
-  const FeedbackImagesScreen({super.key});
+class FeedbackImages extends StatefulWidget {
+  const FeedbackImages({super.key});
 
   @override
-  State<FeedbackImagesScreen> createState() => _FeedbackImagesScreenState();
+  State<FeedbackImages> createState() => _FeedbackImagesState();
 }
 
-class _FeedbackImagesScreenState extends State<FeedbackImagesScreen> {
+class _FeedbackImagesState extends State<FeedbackImages> {
   int activeIndex = 0;
   final controller = CarouselController();
   final urlImages = [
@@ -27,33 +26,27 @@ class _FeedbackImagesScreenState extends State<FeedbackImagesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: bgColor,
-      appBar: backAppBar(context, 'Photos'),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CarouselSlider.builder(
-                carouselController: controller,
-                itemCount: urlImages.length,
-                itemBuilder: (context, index, realIndex) {
-                  final urlImage = urlImages[index];
-                  return buildImage(urlImage, index);
-                },
-                options: CarouselOptions(
-                    height: 400.h,
-                    autoPlay: true,
-                    enableInfiniteScroll: false,
-                    autoPlayAnimationDuration: Duration(seconds: 2),
-                    enlargeCenterPage: true,
-                    onPageChanged: (index, reason) =>
-                        setState(() => activeIndex = index))),
-            SizedBox(height: 12),
-            buildIndicator()
-          ],
-        ),
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CarouselSlider.builder(
+            carouselController: controller,
+            itemCount: urlImages.length,
+            itemBuilder: (context, index, realIndex) {
+              final urlImage = urlImages[index];
+              return buildImage(urlImage, index);
+            },
+            options: CarouselOptions(
+                height: 300.h,
+                autoPlay: true,
+                enableInfiniteScroll: false,
+                autoPlayAnimationDuration: Duration(seconds: 2),
+                enlargeCenterPage: true,
+                onPageChanged: (index, reason) =>
+                    setState(() => activeIndex = index))),
+        SizedBox(height: 12),
+        buildIndicator()
+      ],
     );
   }
 
@@ -67,9 +60,6 @@ class _FeedbackImagesScreenState extends State<FeedbackImagesScreen> {
   void animateToSlide(int index) => controller.animateToPage(index);
 }
 
-Widget buildImage(String urlImage, int index) =>
-    Container(
-      constraints: BoxConstraints(
-                    maxHeight: 400.h
-                  ),
-      child: Image.network(urlImage, fit: BoxFit.cover));
+Widget buildImage(String urlImage, int index) => Container(
+    constraints: BoxConstraints(maxHeight: 400.h),
+    child: Image.network(urlImage, fit: BoxFit.cover));

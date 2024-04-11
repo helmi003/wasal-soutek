@@ -25,7 +25,7 @@ class BottomSheetCamera extends StatelessWidget {
                   color: lightColor)),
           SizedBox(height: 10.h),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               TextButton.icon(
                   onPressed: onPressed,

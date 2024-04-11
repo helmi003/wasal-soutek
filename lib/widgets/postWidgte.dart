@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously, use_key_in_widget_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:chihebapp2/screens/comments_screen.dart';
-import 'package:chihebapp2/screens/feedbackImages_screen.dart';
+import 'package:chihebapp2/widgets/feedbackImages.dart';
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:chihebapp2/widgets/errorMessage.dart';
 import 'package:flutter/gestures.dart';
@@ -107,44 +107,36 @@ class PostWidget extends StatelessWidget {
             SizedBox(
               height: 10.h,
             ),
-            GestureDetector(
-              onTap: (){
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => FeedbackImagesScreen()));
-              },
-              child: Center(
-                child: Stack(children: [
-                  Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 10.h, horizontal: 20.w),
-                      constraints: BoxConstraints(maxHeight: 200.h),
-                      child: Image.asset(
-                        images[0],
-                        fit: BoxFit.cover,
-                      )),
-                  Positioned(
-                    bottom: 15.h,
-                    right: 25.w,
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: silverColor.withOpacity(0.8),
-                      ),
-                      child: Text(
-                        '+${images.length - 1} ',
-                        style: TextStyle(
-                          color: lightColor,
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
+            Center(
+              child: Stack(children: [
+                Container(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 10.h, horizontal: 20.w),
+                    constraints: BoxConstraints(maxHeight: 200.h),
+                    child: Image.asset(
+                      images[0],
+                      fit: BoxFit.cover,
+                    )),
+                Positioned(
+                  bottom: 15.h,
+                  right: 25.w,
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                      color: silverColor.withOpacity(0.8),
+                    ),
+                    child: Text(
+                      '+${images.length - 1} ',
+                      style: TextStyle(
+                        color: lightColor,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  )
-                ]),
-              ),
+                  ),
+                )
+              ]),
             ),
             GestureDetector(
               child: Row(

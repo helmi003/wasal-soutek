@@ -10,6 +10,7 @@ class DropDownWidget extends StatelessWidget {
   final String hint;
   final String? selectedItem;
   final String error;
+  final String selectedItemFromList;
 
   const DropDownWidget(
     this.items,
@@ -17,6 +18,7 @@ class DropDownWidget extends StatelessWidget {
     this.hint,
     this.selectedItem,
     this.error,
+    this.selectedItemFromList,
   );
 
   @override
@@ -26,7 +28,6 @@ class DropDownWidget extends StatelessWidget {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: DropdownButtonFormField(
-              isExpanded: true,
               decoration: InputDecoration(
                 fillColor: Colors.transparent,
                 filled: true,
@@ -56,7 +57,11 @@ class DropDownWidget extends StatelessWidget {
                       child: Text(
                         item,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 16.sp, color: darkColor),
+                        style: TextStyle(
+                            fontSize: 16.sp,
+                            color: item == selectedItemFromList
+                                ? primaryColor
+                                : darkColor),
                       ),
                     ),
                   )

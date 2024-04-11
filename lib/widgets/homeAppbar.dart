@@ -47,21 +47,5 @@ PreferredSizeWidget homeAppBar(BuildContext context) {
           );
         },
       ),
-      actions: [
-        IconButton(
-          icon: Icon(
-            Icons.person,
-            size: 28.h,
-            color: lightColor,
-          ),
-          onPressed: () {
-            // Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //       builder: (context) => ProfileScreen(),
-            //     ));
-          },
-        )
-      ],
       elevation: 0);
 }

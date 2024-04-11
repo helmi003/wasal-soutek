@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, sort_child_properties_last
 
+import 'package:chihebapp2/screens/tab_screen.dart';
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:chihebapp2/widgets/homeAppbar.dart';
 import 'package:chihebapp2/widgets/iconButtonWidget.dart';
@@ -77,19 +78,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             SizedBox(height: 10.h),
             IconButtonWidget('List des réclamation', Icons.list,false ,() {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => ListOfReclamedUsers()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => TabScreen(role: 'admin',)));
             }),
-            SizedBox(height: 10.h),
-            // if (user.role == "admin")
-              IconButtonWidget('List des utilisateurs', Icons.group,false, () {
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => ListOfUsersScreen()));
-              }),
+            
             SizedBox(
               height: 10.h,
             )

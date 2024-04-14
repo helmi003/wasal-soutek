@@ -16,28 +16,56 @@ class FeedbackProvider with ChangeNotifier {
   List<FeedbackModel> badFeedbacks = [];
   List<FeedbackModel> goodFeedbacks = [];
 
-  Future<void> addFeedback(
-      String name,String link,String message, List<XFile> photos, bool review) async {
+  Future<void> addFeedback(String name, String link, String message,
+      List<XFile> photos, bool review) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       token = prefs.getString('token')!;
-      final List<File> imageFiles = photos.map((photo) => File(photo.path)).toList();
-      final response = await http.post(Uri.parse("$url/review"),
-          headers: {
-            "Content-Type": "multipart/form-data",
-            'Authorization': "Bearer $token",
-          },
-          body: json.encode({
-            "name": name,
-            "link": link,
-            "message": message,
-            "images": imageFiles.map((file) => file.path).toList(),
-            "review": review,
-          }));
+      final List<File> imageFiles =
+          photos.map((photo) => File(photo.path)).toList();
+      final request = http.MultipartRequest('POST', Uri.parse('$url/review'));
+      request.headers['Authorization'] = 'Bearer $token';
+      request.fields['name'] = name;
+      request.fields['link'] = link;
+      request.fields['message'] = message;
+      request.fields['review'] = review.toString();
 
-      final body = json.decode(response.body);
+      for (int i = 0; i < imageFiles.length; i++) {
+        request.files.add(
+            await http.MultipartFile.fromPath('images', imageFiles[i].path));
+      }
+
+      final response = await request.send();
+      final body = await response.stream.bytesToString();
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         notifyListeners();
+      } else {
+        throw HttpException2(body);
+      }
+    } on SocketException {
+      throw HttpException2("Impossible d'accéder à Internet!");
+    } on FormatException {
+      throw HttpException2("Une erreur est survenue");
+    } on StateError {
+      throw HttpException2("Une erreur est survenue");
+    } catch (exception) {
+      throw HttpException2(exception.toString());
+    }
+  }
+
+  Future<bool> deleteFeedback(String id) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      token = prefs.getString('token')!;
+      final response = await http.delete(Uri.parse("$url/review/$id"), headers: {
+        "Content-Type": "application/json",
+        'Authorization': "Bearer $token",
+      });
+      final body = json.decode(response.body);
+      if (response.statusCode == 200) {
+        notifyListeners();
+        return true;
       } else {
         throw HttpException2(body['message']);
       }
@@ -61,7 +89,6 @@ class FeedbackProvider with ChangeNotifier {
         'Authorization': "Bearer $token",
       });
       final body = json.decode(response.body);
-      print(body);
       if (response.statusCode == 200) {
         goodFeedbacks =
             (body as List).map((json) => FeedbackModel.fromJson(json)).toList();
@@ -90,7 +117,6 @@ class FeedbackProvider with ChangeNotifier {
         'Authorization': "Bearer $token",
       });
       final body = json.decode(response.body);
-      print(body);
       if (response.statusCode == 200) {
         badFeedbacks =
             (body as List).map((json) => FeedbackModel.fromJson(json)).toList();
@@ -108,5 +134,13 @@ class FeedbackProvider with ChangeNotifier {
     } catch (exception) {
       throw HttpException2(exception.toString());
     }
+  }
+
+  updateGoodFeedbacks(List<FeedbackModel> feedbacks){
+    goodFeedbacks = feedbacks;
+  }
+
+  updateBadFeedbacks(List<FeedbackModel> feedbacks){
+    badFeedbacks = feedbacks;
   }
 }

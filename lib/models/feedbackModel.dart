@@ -6,8 +6,7 @@ class FeedbackModel {
   final String link;
   final List images;
   final bool review;
-  final bool show;
-  // final UserModel user;
+  final UserModel user;
   final String message;
   final bool approved;
   final String createdAt;
@@ -18,8 +17,7 @@ class FeedbackModel {
     required this.link,
     required this.images,
     required this.review,
-    required this.show,
-    // required this.user,
+    required this.user,
     required this.message,
     required this.approved,
     required this.createdAt,
@@ -32,8 +30,7 @@ class FeedbackModel {
       link: json['link'] ?? '',
       images: json['images'] ?? [],
       review: json['review'] ?? false,
-      show: json['show'] ?? false,
-      // user: UserModel.fromJson(json['user'] ?? {}),
+      user: UserModel.fromJson(json['user'] ?? {}),
       message: json['message'] ?? '',
       approved: json['approved'] ?? false,
       createdAt: json['createdAt'] ?? '',

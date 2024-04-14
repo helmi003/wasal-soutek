@@ -18,53 +18,38 @@ class YourMessageWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(right: 5.w),
-              child: GestureDetector(
-                onLongPress: deleteMessage,
-                onTap: showDate,
-                child: Container(
-                  width: 330.w,
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-                  decoration: BoxDecoration(
-                    color: show
-                        ? secondaryColor.withOpacity(0.5)
-                        : secondaryColor.withOpacity(0.8),
-                    border: Border.all(
-                        width: 2,
-                        color: show
-                            ? primaryColor.withOpacity(0.7)
-                            : primaryColor),
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(18.r),
-                      bottomRight: Radius.circular(0.r),
-                      topLeft: Radius.circular(18.r),
-                      topRight: Radius.circular(18.r),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          message,
-                          style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.w500,
-                            color: lightColor,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+        Padding(
+          padding: EdgeInsets.only(right: 5.w),
+          child: GestureDetector(
+            onLongPress: deleteMessage,
+            onTap: showDate,
+            child: Container(
+              constraints: BoxConstraints(maxWidth: 330.w),
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+              decoration: BoxDecoration(
+                color: show
+                    ? secondaryColor.withOpacity(0.5)
+                    : secondaryColor.withOpacity(0.8),
+                border: Border.all(
+                    width: 2,
+                    color: show ? primaryColor.withOpacity(0.7) : primaryColor),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(18.r),
+                  bottomRight: Radius.circular(0.r),
+                  topLeft: Radius.circular(18.r),
+                  topRight: Radius.circular(18.r),
+                ),
+              ),
+              child: Text(
+                message,
+                style: TextStyle(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w500,
+                  color: lightColor,
                 ),
               ),
             ),
-          ],
+          ),
         ),
         Padding(
           padding: EdgeInsets.only(right: 10.w),

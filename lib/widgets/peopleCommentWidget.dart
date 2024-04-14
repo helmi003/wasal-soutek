@@ -2,6 +2,7 @@
 
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PeopleCommnetWidget extends StatelessWidget {
@@ -10,12 +11,14 @@ class PeopleCommnetWidget extends StatelessWidget {
   final String message;
   final String time;
   final bool show;
+  final VoidCallback deleteMessage;
   final VoidCallback showDate;
   PeopleCommnetWidget(this.userName, this.userImage, this.message, this.time,
-      this.show, this.showDate);
+      this.show,this.deleteMessage, this.showDate);
 
   @override
   Widget build(BuildContext context) {
+    final url = dotenv.env['API_URL'];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -28,19 +31,19 @@ class PeopleCommnetWidget extends StatelessWidget {
               padding: EdgeInsets.only(left: 5.w),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(100.r),
-                child: Image.asset(
-                  userImage,
+                child: Image.network(
+                  "$url/${userImage.replaceAll('\'', '/')}",
                   height: 20,
                 ),
               ),
             ),
             GestureDetector(
+              onLongPress: deleteMessage,
               onTap: showDate,
               child: Container(
                 constraints: BoxConstraints(
                   maxWidth: 330.w
                 ),
-                // width: ,
                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                 decoration: BoxDecoration(
                   color: show

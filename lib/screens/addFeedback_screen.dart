@@ -260,12 +260,23 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
             companyName.clear();
             link.clear();
             message.clear();
+            clearAll();
           });
-          showDialog(
-            context: context,
-            builder: ((context) => ErrorPopUp(
-                "Succés", "Votre post est publié avec succès", greenColor)),
-          );
+          if (review) {
+            showDialog(
+              context: context,
+              builder: ((context) => ErrorPopUp(
+                  "Succés", "Votre post est publié avec succès", greenColor)),
+            );
+          } else {
+            showDialog(
+              context: context,
+              builder: ((context) => ErrorPopUp(
+                  "Succés",
+                  "Votre post sera en attente pour le moment jusqu'à ce que l'administrateur l'approuve",
+                  greenColor)),
+            );
+          }
         });
       } catch (onError) {
         showDialog(

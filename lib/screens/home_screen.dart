@@ -81,9 +81,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => TabScreen(role: 'admin',)));
+                      builder: (context) => TabScreen()));
             }),
-            
             SizedBox(
               height: 10.h,
             )

@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:chihebapp2/Services/commentsProvider.dart';
 import 'package:chihebapp2/Services/feedbackProvider.dart';
 import 'package:chihebapp2/Services/userProvider.dart';
 import 'package:chihebapp2/screens/home_screen.dart';
@@ -19,6 +20,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => FeedbackProvider()),
+        ChangeNotifierProvider(create: (_) => CommentProvider()),
       ],
       child: MyApp(),
     ));
@@ -44,17 +46,7 @@ class MyApp extends StatelessWidget {
               LoginScreen.routeName: (ctx) => LoginScreen(),
               LoginWithEmailScreen.routeName: (ctx) => LoginWithEmailScreen(),
               HomeScreen.routeName: (ctx) => HomeScreen(),
-            },
-            onGenerateRoute: (settings) {
-              if (settings.name == TabScreen.routeName) {
-                final args = settings.arguments as String;
-                return MaterialPageRoute(
-                  builder: (context) {
-                    return TabScreen(role: args);
-                  },
-                );
-              }
-              return null;
+              TabScreen.routeName: (ctx) => TabScreen(),
             },
           );
         });

@@ -11,16 +11,29 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PostWidget extends StatelessWidget {
+  final String id;
+  final bool review;
   final String userImage;
   final String name;
   final String time;
+  final bool allowedToDelete;
   final VoidCallback delete;
   final String entreprise;
   final String message;
   final String lien;
   final List images;
-  const PostWidget(this.userImage, this.name, this.time, this.delete,
-      this.entreprise, this.message, this.lien, this.images);
+  const PostWidget(
+      this.id,
+      this.review,
+      this.userImage,
+      this.name,
+      this.time,
+      this.allowedToDelete,
+      this.delete,
+      this.entreprise,
+      this.message,
+      this.lien,
+      this.images);
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +48,9 @@ class PostWidget extends StatelessWidget {
           children: [
             ListTile(
               leading: CircleAvatar(
-                  radius: 20.r, backgroundImage: AssetImage(userImage)),
+                  radius: 20.r,
+                  backgroundImage:
+                      NetworkImage("$url/${userImage.replaceAll('\'', '/')}")),
               title: Text(
                 name,
                 style: TextStyle(
@@ -48,16 +63,18 @@ class PostWidget extends StatelessWidget {
                 style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontSize: 14.sp,
-                    color: darkColor),
+                    color: darkColor.withOpacity(0.8)),
               ),
-              trailing: IconButton(
-                icon: Icon(
-                  Icons.close,
-                  color: lightColor,
-                  size: 25.h,
-                ),
-                onPressed: delete,
-              ),
+              trailing: allowedToDelete
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.close,
+                        color: lightColor,
+                        size: 25.h,
+                      ),
+                      onPressed: delete,
+                    )
+                  : null,
             ),
             Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10.w),
@@ -96,13 +113,17 @@ class PostWidget extends StatelessWidget {
                               text: lien,
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () async {
-                                  if (!await launchUrl(Uri.parse(lien))) {
-                                    throw showDialog(
-                                        context: context,
-                                        builder: (context) => ErrorPopUp(
-                                            'Alert',
-                                            'Ce site est inaccessible pour le moment',
-                                            redColor));
+                                  try {
+                                    await launchUrl(Uri.parse(lien));
+                                  } catch (e) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => ErrorPopUp(
+                                        'Alert',
+                                        'Ce lien est inaccessible pour le moment',
+                                        redColor,
+                                      ),
+                                    );
                                   }
                                 },
                             )
@@ -163,8 +184,17 @@ class PostWidget extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => CommentsScreen(userImage, name,
-                            time, delete, entreprise, message, lien,images)));
+                        builder: (context) => CommentsScreen(
+                            id,
+                            review,
+                            userImage,
+                            name,
+                            time,
+                            allowedToDelete,
+                            entreprise,
+                            message,
+                            lien,
+                            images)));
               },
             ),
             SizedBox(

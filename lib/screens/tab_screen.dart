@@ -9,8 +9,6 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 
 class TabScreen extends StatefulWidget {
   static const routeName = "/TabScreen";
-  final String role;
-  TabScreen({required this.role});
   @override
   State<TabScreen> createState() => _TabScreenState();
 }

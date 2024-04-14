@@ -24,7 +24,7 @@ class AddComment extends StatelessWidget {
           children: [
             Expanded(
               child: TextField(
-                cursorColor: primaryColor,
+                cursorColor: lightColor,
                 controller: message,
                 decoration: InputDecoration(
                   fillColor: Colors.transparent,
@@ -32,7 +32,7 @@ class AddComment extends StatelessWidget {
                   border: InputBorder.none,
                   hintText: 'Message...',
                   hintStyle: TextStyle(
-                      color: silverColor,
+                      color: lightColor,
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w500),
                   focusedBorder: OutlineInputBorder(
@@ -44,7 +44,7 @@ class AddComment extends StatelessWidget {
                     borderSide: BorderSide(color: lightColor, width: 3.w),
                   ),
                 ),
-                style: TextStyle(color: primaryColor, fontSize: 16.sp),
+                style: TextStyle(color: lightColor, fontSize: 16.sp),
               ),
             ),
             IconButton(

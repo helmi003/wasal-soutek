@@ -2,8 +2,9 @@
 
 import 'package:chihebapp2/Services/userProvider.dart';
 import 'package:chihebapp2/screens/home_screen.dart';
+import 'package:chihebapp2/screens/loginWithEmail_screen.dart';
 import 'package:chihebapp2/utils/colors.dart';
-import 'package:chihebapp2/widgets/errorMessage.dart';
+import 'package:chihebapp2/widgets/errorPopUp.dart';
 import 'package:chihebapp2/widgets/iconButtonWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -54,6 +55,19 @@ class _LoginScreenState extends State<LoginScreen> {
               false,
               () {
                 login();
+              },
+            )),
+            SizedBox(height: 10.h),
+            Center(
+                child: IconButtonWidget(
+              'login with email',
+              FontAwesomeIcons.solidEnvelope,
+              false,
+              () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => LoginWithEmailScreen()));
               },
             ))
           ],

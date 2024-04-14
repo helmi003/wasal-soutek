@@ -1,19 +1,22 @@
-// ignore_for_file: prefer_const_constructors, prefer_final_fields, unnecessary_null_comparison
+// ignore_for_file: prefer_const_constructors, prefer_final_fields, unnecessary_null_comparison, use_build_context_synchronously
 
 import 'dart:io';
 
+import 'package:chihebapp2/Services/feedbackProvider.dart';
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:chihebapp2/widgets/appbar.dart';
 import 'package:chihebapp2/widgets/buttonWidget.dart';
 import 'package:chihebapp2/widgets/choosePictureType.dart';
 import 'package:chihebapp2/widgets/drawerWidget.dart';
 import 'package:chihebapp2/widgets/dropDownWidget.dart';
+import 'package:chihebapp2/widgets/errorPopUp.dart';
 import 'package:chihebapp2/widgets/textArea.dart';
 import 'package:chihebapp2/widgets/textFieldWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class AddFeedbackScreen extends StatefulWidget {
   const AddFeedbackScreen({super.key});
@@ -176,7 +179,7 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
               ),
             ),
             SizedBox(height: 10.h),
-            ButtonWidget(() {}, "Ajouter", isLoading),
+            ButtonWidget(addFeedback, "Ajouter", isLoading),
             SizedBox(height: 10.h),
           ],
         ),
@@ -212,5 +215,70 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
     setState(() {
       photos = [];
     });
+  }
+
+  addFeedback() async {
+    if (companyName.text.isEmpty) {
+      setState(() {
+        companyNameError = "Ce champ est obligatoire";
+        selectedItemError = "";
+        messageError = "";
+      });
+    } else if (selectedItem == "") {
+      setState(() {
+        companyNameError = "";
+        selectedItemError = "Vous devez choisir une option";
+        messageError = "";
+      });
+    } else if (message.text.isEmpty) {
+      setState(() {
+        companyNameError = "";
+        selectedItemError = "";
+        messageError = "Ce champ est obligatoire";
+      });
+    } else if (photos.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) =>
+            ErrorPopUp('Alert', 'Il faut choisir au moins une photo', redColor),
+      );
+    } else {
+      setState(() {
+        isLoading = true;
+      });
+      try {
+        bool review = false;
+        if (selectedItem == "Je recommande") {
+          review = true;
+        }
+        await context
+            .read<FeedbackProvider>()
+            .addFeedback(
+                companyName.text, link.text, message.text, photos, review)
+            .then((value) {
+          setState(() {
+            companyName.clear();
+            link.clear();
+            message.clear();
+          });
+          showDialog(
+            context: context,
+            builder: ((context) => ErrorPopUp(
+                "Succés", "Votre post est publié avec succès", greenColor)),
+          );
+        });
+      } catch (onError) {
+        showDialog(
+          context: context,
+          builder: ((context) =>
+              ErrorPopUp("Alert", onError.toString(), redColor)),
+        );
+        print(onError.toString());
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
   }
 }

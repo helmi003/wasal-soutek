@@ -24,24 +24,27 @@ class IconButtonWidget extends StatelessWidget {
               ? CircularProgressIndicator(
                   color: lightColor,
                 )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Icon(
-                      icon,
-                      size: 25.h,
-                      color: primaryColor,
-                    ),
-                    Text(
-                      text,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: darkColor),
-                    ),
-                  ],
-                ),
+              : Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(
+                        icon,
+                        size: 25.h,
+                        color: primaryColor,
+                      ),
+                      Text(
+                        text,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: darkColor),
+                      ),
+                    ],
+                  ),
+              ),
         ),
         decoration: BoxDecoration(
             color: silverColor.withOpacity(0.4), borderRadius: BorderRadius.circular(16.r)),

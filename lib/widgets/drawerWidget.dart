@@ -1,26 +1,33 @@
 // ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, prefer_const_constructors_in_immutables
+import 'package:chihebapp2/Services/userProvider.dart';
 import 'package:chihebapp2/screens/about_screen.dart';
 import 'package:chihebapp2/screens/home_screen.dart';
+import 'package:chihebapp2/screens/loginWithEmail_screen.dart';
 import 'package:chihebapp2/utils/colors.dart';
+import 'package:chihebapp2/widgets/acceptOrDeclineWidget.dart';
 import 'package:chihebapp2/widgets/drawerItemsWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class DrawerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic> user =
+        Provider.of<UserProvider>(context, listen: false).user;
+    print(user['user']['email']);
     return Drawer(
       backgroundColor: bgColor,
       child: ListView(
         children: <Widget>[
           UserAccountsDrawerHeader(
-            accountName: Text('Helmi',
+            accountName: Text(user['user']['displayName'],
                 style: TextStyle(
                     color: lightColor,
                     fontWeight: FontWeight.w600,
                     fontSize: 16.sp)),
-            accountEmail: Text('helmi.br1999@gmail.com',
+            accountEmail: Text(user['user']['email'],
                 style: TextStyle(
                     color: lightColor,
                     fontWeight: FontWeight.w600,
@@ -59,8 +66,19 @@ class DrawerWidget extends StatelessWidget {
                   size: 25.r,
                   color: secondaryColor,
                 )),
-            onTap: () {
-              
+            onTap: () async {
+              showDialog(
+                context: context,
+                builder: (context) => AcceptOrDecline(
+                    "Alert", "Êtes-vous sûr de vouloir vous déconnecter?",
+                    () async {
+                  await context.read<UserProvider>().logout().then((value) =>
+                      Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          LoginWithEmailScreen.routeName,
+                          (Route<dynamic> route) => false));
+                }),
+              );
             },
           ),
         ],

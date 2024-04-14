@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:chihebapp2/Services/feedbackProvider.dart';
 import 'package:chihebapp2/Services/userProvider.dart';
 import 'package:chihebapp2/screens/home_screen.dart';
+import 'package:chihebapp2/screens/loginWithEmail_screen.dart';
 import 'package:chihebapp2/screens/login_screen.dart';
 import 'package:chihebapp2/screens/spalsh_screen.dart';
 import 'package:chihebapp2/screens/tab_screen.dart';
@@ -16,6 +18,7 @@ void main() async {
     runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => FeedbackProvider()),
       ],
       child: MyApp(),
     ));
@@ -39,6 +42,7 @@ class MyApp extends StatelessWidget {
             home: SplashScreen(),
             routes: {
               LoginScreen.routeName: (ctx) => LoginScreen(),
+              LoginWithEmailScreen.routeName: (ctx) => LoginWithEmailScreen(),
               HomeScreen.routeName: (ctx) => HomeScreen(),
             },
             onGenerateRoute: (settings) {

@@ -15,26 +15,55 @@ class UserProvider with ChangeNotifier {
   Map<String, dynamic> user = {};
   String token = "";
 
-  Future<void> login() async {
+  Future<void> login(String email, String password) async {
     try {
-      final response = await http.get(Uri.parse("$url/user/auth/facebook"));
+      final response = await http.post(
+        Uri.parse("$url/user/login"),
+        body: {"email": email, "password": password},
+      );
       final body = json.decode(response.body);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         token = body['token'];
         SharedPreferences pref = await SharedPreferences.getInstance();
         pref.setString("token", token);
         user = JwtDecoder.decode(token);
-        pref.setString("user", json.encode(user['user']));
-        print(user['user']);
+        pref.setString("user", json.encode(user));
         notifyListeners();
+        print(body);
       } else {
         throw HttpException2(body['message']);
       }
+    } on SocketException {
+      throw HttpException2("Impossible d'accéder à Internet!");
+    } on FormatException {
+      throw HttpException2("Une erreur est survenue");
+    } on StateError {
+      throw HttpException2("Une erreur est survenue");
     } catch (exception) {
-      print(exception.toString());
       throw HttpException2(exception.toString());
     }
   }
+
+  // Future<void> login(String email,String password) async {
+  //   try {
+  //     final response = await http.get(Uri.parse("$url/user/auth/login"));
+  //     final body = json.decode(response.body);
+  //     if (response.statusCode == 200) {
+  //       // token = body['token'];
+  //       // SharedPreferences pref = await SharedPreferences.getInstance();
+  //       // pref.setString("token", token);
+  //       // user = JwtDecoder.decode(token);
+  //       // pref.setString("user", json.encode(user['user']));
+  //       print(user);
+  //       notifyListeners();
+  //     } else {
+  //       throw HttpException2(body['message']);
+  //     }
+  //   } catch (exception) {
+  //     print(exception.toString());
+  //     throw HttpException2(exception.toString());
+  //   }
+  // }
 
   Future<bool> tryAutoLogin() async {
     final prefs = await SharedPreferences.getInstance();

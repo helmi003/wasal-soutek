@@ -1,13 +1,15 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, prefer_const_constructors_in_immutables
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class FeedbackImages extends StatefulWidget {
-  const FeedbackImages({super.key});
+  final List images;
+  FeedbackImages(this.images);
 
   @override
   State<FeedbackImages> createState() => _FeedbackImagesState();
@@ -16,13 +18,7 @@ class FeedbackImages extends StatefulWidget {
 class _FeedbackImagesState extends State<FeedbackImages> {
   int activeIndex = 0;
   final controller = CarouselController();
-  final urlImages = [
-    'https://images.unsplash.com/photo-1612825173281-9a193378527e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=499&q=80',
-    'https://images.unsplash.com/photo-1580654712603-eb43273aff33?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-    'https://images.unsplash.com/photo-1627916607164-7b20241db935?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=464&q=80',
-    'https://images.unsplash.com/photo-1522037576655-7a93ce0f4d10?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-    'https://images.unsplash.com/photo-1570829053985-56e661df1ca2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-  ];
+  final url = dotenv.env['API_URL'];
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +27,9 @@ class _FeedbackImagesState extends State<FeedbackImages> {
       children: [
         CarouselSlider.builder(
             carouselController: controller,
-            itemCount: urlImages.length,
+            itemCount: widget.images.length,
             itemBuilder: (context, index, realIndex) {
-              final urlImage = urlImages[index];
-              return buildImage(urlImage, index);
+              return buildImage("$url/uploads/${widget.images[index]}", index);
             },
             options: CarouselOptions(
                 height: 300.h,
@@ -45,7 +40,7 @@ class _FeedbackImagesState extends State<FeedbackImages> {
                 onPageChanged: (index, reason) =>
                     setState(() => activeIndex = index))),
         SizedBox(height: 12),
-        buildIndicator()
+        if (widget.images.length > 1) buildIndicator()
       ],
     );
   }
@@ -54,7 +49,7 @@ class _FeedbackImagesState extends State<FeedbackImages> {
         onDotClicked: animateToSlide,
         effect: ExpandingDotsEffect(dotWidth: 15, activeDotColor: primaryColor),
         activeIndex: activeIndex,
-        count: urlImages.length,
+        count: widget.images.length,
       );
 
   void animateToSlide(int index) => controller.animateToPage(index);

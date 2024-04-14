@@ -4,7 +4,7 @@ import 'package:chihebapp2/Services/userProvider.dart';
 import 'package:chihebapp2/screens/home_screen.dart';
 import 'package:chihebapp2/screens/login_screen.dart';
 import 'package:chihebapp2/utils/colors.dart';
-import 'package:chihebapp2/widgets/errorMessage.dart';
+import 'package:chihebapp2/widgets/errorPopUp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -39,14 +39,14 @@ class _SplashScreenState extends State<SplashScreen>
           if (isLoggedIn) {
             Navigator.pushReplacementNamed(context, HomeScreen.routeName);
           } else {
-            Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+            Navigator.pushReplacementNamed(context, LoginScreen.routeName);
           }
         } catch (e) {
           Navigator.pushReplacementNamed(context, LoginScreen.routeName);
           showDialog(
               context: context,
               builder: ((context) {
-                return ErrorMessage(
+                return ErrorPopUp(
                   "Alert",
                   e.toString(),
                   redColor,

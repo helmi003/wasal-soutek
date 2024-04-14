@@ -1,11 +1,11 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously, use_key_in_widget_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:chihebapp2/screens/comments_screen.dart';
-import 'package:chihebapp2/widgets/feedbackImages.dart';
 import 'package:chihebapp2/utils/colors.dart';
-import 'package:chihebapp2/widgets/errorMessage.dart';
+import 'package:chihebapp2/widgets/errorPopUp.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -24,6 +24,7 @@ class PostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final url = dotenv.env['API_URL'];
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
       child: Container(
@@ -78,64 +79,64 @@ class PostWidget extends StatelessWidget {
                   message,
                   style: TextStyle(color: lightColor),
                 )),
-            Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                child: RichText(
-                    overflow: TextOverflow.ellipsis,
-                    text: TextSpan(
-                        text: "Lien d'association: ",
-                        style: TextStyle(color: lightColor),
-                        children: [
-                          TextSpan(
-                            style: TextStyle(
-                                color: darkColor,
-                                decoration: TextDecoration.underline),
-                            text: lien,
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () async {
-                                if (!await launchUrl(Uri.parse(lien))) {
-                                  throw showDialog(
-                                      context: context,
-                                      builder: (context) => ErrorMessage(
-                                          'Alert',
-                                          'Ce site est inaccessible pour le moment',
-                                          redColor));
-                                }
-                              },
-                          )
-                        ]))),
-            SizedBox(
-              height: 10.h,
-            ),
+            if (lien != "")
+              Padding(
+                  padding:
+                      EdgeInsets.only(left: 10.w, right: 10.w, bottom: 10.h),
+                  child: RichText(
+                      overflow: TextOverflow.ellipsis,
+                      text: TextSpan(
+                          text: "Lien d'association: ",
+                          style: TextStyle(color: lightColor),
+                          children: [
+                            TextSpan(
+                              style: TextStyle(
+                                  color: darkColor,
+                                  decoration: TextDecoration.underline),
+                              text: lien,
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  if (!await launchUrl(Uri.parse(lien))) {
+                                    throw showDialog(
+                                        context: context,
+                                        builder: (context) => ErrorPopUp(
+                                            'Alert',
+                                            'Ce site est inaccessible pour le moment',
+                                            redColor));
+                                  }
+                                },
+                            )
+                          ]))),
             Center(
               child: Stack(children: [
                 Container(
                     padding:
                         EdgeInsets.symmetric(vertical: 10.h, horizontal: 20.w),
                     constraints: BoxConstraints(maxHeight: 200.h),
-                    child: Image.asset(
-                      images[0],
+                    child: Image.network(
+                      "$url/uploads/${images[0]}",
                       fit: BoxFit.cover,
                     )),
-                Positioned(
-                  bottom: 15.h,
-                  right: 25.w,
-                  child: Container(
-                    padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: silverColor.withOpacity(0.8),
-                    ),
-                    child: Text(
-                      '+${images.length - 1} ',
-                      style: TextStyle(
-                        color: lightColor,
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold,
+                if (images.length > 1)
+                  Positioned(
+                    bottom: 15.h,
+                    right: 25.w,
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        color: silverColor.withOpacity(0.8),
+                      ),
+                      child: Text(
+                        '+${images.length - 1} ',
+                        style: TextStyle(
+                          color: lightColor,
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                )
+                  )
               ]),
             ),
             GestureDetector(
@@ -163,7 +164,7 @@ class PostWidget extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => CommentsScreen(userImage, name,
-                            time, delete, entreprise, message, lien)));
+                            time, delete, entreprise, message, lien,images)));
               },
             ),
             SizedBox(

@@ -1,19 +1,15 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously, use_key_in_widget_constructors, prefer_const_constructors_in_immutables
 
-import 'dart:io';
-
 import 'package:chihebapp2/widgets/addComment.dart';
-import 'package:chihebapp2/widgets/choosePictureType.dart';
 import 'package:chihebapp2/widgets/feedbackImages.dart';
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:chihebapp2/widgets/backAppbar.dart';
-import 'package:chihebapp2/widgets/errorMessage.dart';
+import 'package:chihebapp2/widgets/errorPopUp.dart';
 import 'package:chihebapp2/widgets/peopleCommentWidget.dart';
 import 'package:chihebapp2/widgets/yourMessageWidget.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CommentsScreen extends StatefulWidget {
@@ -24,8 +20,9 @@ class CommentsScreen extends StatefulWidget {
   final String entreprise;
   final String message;
   final String lien;
+  final List images;
   CommentsScreen(this.userImage, this.name, this.time, this.delete,
-      this.entreprise, this.message, this.lien);
+      this.entreprise, this.message, this.lien, this.images);
 
   @override
   State<CommentsScreen> createState() => _CommentsScreenState();
@@ -35,9 +32,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
   TextEditingController messageController = TextEditingController();
   bool show = false;
   bool user = true;
-  File? _photo;
   String photo = "";
-  ImagePicker imagePicker = ImagePicker();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,34 +74,36 @@ class _CommentsScreenState extends State<CommentsScreen> {
                   widget.message,
                   style: TextStyle(color: darkColor),
                 )),
-            Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: RichText(
-                    overflow: TextOverflow.ellipsis,
-                    text: TextSpan(
-                        text: "Lien d'association: ",
-                        style: TextStyle(color: darkColor),
-                        children: [
-                          TextSpan(
-                            style: TextStyle(
-                                color: primaryColor,
-                                decoration: TextDecoration.underline),
-                            text: widget.lien,
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () async {
-                                if (!await launchUrl(Uri.parse(widget.lien))) {
-                                  throw showDialog(
-                                      context: context,
-                                      builder: (context) => ErrorMessage(
-                                          'Alert',
-                                          'Ce site est inaccessible pour le moment',
-                                          redColor));
-                                }
-                              },
-                          )
-                        ]))),
-            SizedBox(height: 10.h),
-            FeedbackImages(),
+            if (widget.lien != "")
+              Padding(
+                  padding:
+                      EdgeInsets.only(left: 20.w, right: 20.w, bottom: 10.h),
+                  child: RichText(
+                      overflow: TextOverflow.ellipsis,
+                      text: TextSpan(
+                          text: "Lien d'association: ",
+                          style: TextStyle(color: darkColor),
+                          children: [
+                            TextSpan(
+                              style: TextStyle(
+                                  color: primaryColor,
+                                  decoration: TextDecoration.underline),
+                              text: widget.lien,
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  if (!await launchUrl(
+                                      Uri.parse(widget.lien))) {
+                                    throw showDialog(
+                                        context: context,
+                                        builder: (context) => ErrorPopUp(
+                                            'Alert',
+                                            'Ce site est inaccessible pour le moment',
+                                            redColor));
+                                  }
+                                },
+                            )
+                          ]))),
+            FeedbackImages(widget.images),
             SizedBox(
               height: 10.h,
             ),
@@ -150,8 +147,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
           ],
         ),
       ),
-      bottomSheet: AddComment(messageController, () {}
-      ),
+      bottomSheet: AddComment(messageController, () {}),
     );
   }
 }

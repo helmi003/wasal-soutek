@@ -19,6 +19,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:insta_image_viewer/insta_image_viewer.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -90,10 +91,12 @@ class _CommentsScreenState extends State<CommentsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ListTile(
-                  leading: CircleAvatar(
-                      radius: 20.r,
-                      backgroundImage: NetworkImage(
-                          "$url/${widget.userImage.replaceAll('\'', '/')}")),
+                  leading: InstaImageViewer(
+                    child: CircleAvatar(
+                        radius: 20.r,
+                        backgroundImage: NetworkImage(
+                            "$url/${widget.userImage.replaceAll('\'', '/')}")),
+                  ),
                   title: Text(
                     widget.name,
                     style: TextStyle(
@@ -142,11 +145,15 @@ class _CommentsScreenState extends State<CommentsScreen> {
                       child: RichText(
                           overflow: TextOverflow.ellipsis,
                           text: TextSpan(
-                              text: "Lien d'association: ",
-                              style: TextStyle(color: darkColor),
+                              text: "Lien d'entreprise: ",
+                              style: TextStyle(
+                                color: darkColor,
+                                fontWeight: FontWeight.bold,
+                              ),
                               children: [
                                 TextSpan(
                                   style: TextStyle(
+                                      fontWeight: FontWeight.w400,
                                       color: primaryColor,
                                       decoration: TextDecoration.underline),
                                   text: widget.lien,
@@ -167,7 +174,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                                     },
                                 )
                               ]))),
-                FeedbackImages(widget.images),
+                FeedbackImages(300, widget.images),
                 SizedBox(
                   height: 10.h,
                 ),

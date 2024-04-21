@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously, use_key_in_widget_constructors, prefer_const_literals_to_create_immutables
 
-import 'package:chihebapp2/screens/comments_screen.dart';
+import 'package:chihebapp2/screens/fullScreenImage_screen.dart';
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:chihebapp2/widgets/errorPopUp.dart';
 import 'package:flutter/gestures.dart';
@@ -8,33 +8,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:insta_image_viewer/insta_image_viewer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class PostWidget extends StatelessWidget {
-  final String id;
-  final bool review;
+class PendingPostWidget extends StatelessWidget {
   final String userImage;
   final String name;
   final String time;
-  final bool allowedToDelete;
-  final VoidCallback delete;
+  final VoidCallback approve;
+  final VoidCallback refuse;
   final String entreprise;
   final String message;
   final String lien;
   final List images;
-  const PostWidget(
-      this.id,
-      this.review,
-      this.userImage,
-      this.name,
-      this.time,
-      this.allowedToDelete,
-      this.delete,
-      this.entreprise,
-      this.message,
-      this.lien,
-      this.images);
+  const PendingPostWidget(this.userImage, this.name, this.time, this.approve,
+      this.refuse, this.entreprise, this.message, this.lien, this.images);
 
   @override
   Widget build(BuildContext context) {
@@ -48,12 +35,10 @@ class PostWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListTile(
-              leading: InstaImageViewer(
-                child: CircleAvatar(
-                    radius: 20.r,
-                    backgroundImage: NetworkImage(
-                        "$url/${userImage.replaceAll('\'', '/')}")),
-              ),
+              leading: CircleAvatar(
+                  radius: 20.r,
+                  backgroundImage:
+                      NetworkImage("$url/${userImage.replaceAll('\'', '/')}")),
               title: Text(
                 name,
                 style: TextStyle(
@@ -68,16 +53,6 @@ class PostWidget extends StatelessWidget {
                     fontSize: 14.sp,
                     color: darkColor.withOpacity(0.8)),
               ),
-              trailing: allowedToDelete
-                  ? IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        color: lightColor,
-                        size: 25.h,
-                      ),
-                      onPressed: delete,
-                    )
-                  : null,
             ),
             Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10.w),
@@ -138,7 +113,13 @@ class PostWidget extends StatelessWidget {
                 )),
             Center(
               child: Stack(children: [
-                InstaImageViewer(
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FullScreenImage(images)));
+                  },
                   child: Container(
                       padding: EdgeInsets.symmetric(
                           vertical: 10.h, horizontal: 20.w),
@@ -170,42 +151,52 @@ class PostWidget extends StatelessWidget {
                   )
               ]),
             ),
-            GestureDetector(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    FontAwesomeIcons.comments,
-                    color: lightColor,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                GestureDetector(
+                  onTap: refuse,
+                  child: Row(
+                    children: [
+                      Icon(
+                        FontAwesomeIcons.xmark,
+                        color: redColor,
+                      ),
+                      SizedBox(
+                        width: 5.w,
+                      ),
+                      Text(
+                        'Refuser',
+                        style: TextStyle(
+                            color: lightColor,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18.sp),
+                      )
+                    ],
                   ),
-                  SizedBox(
-                    width: 15.w,
+                ),
+                GestureDetector(
+                  onTap: approve,
+                  child: Row(
+                    children: [
+                      Icon(
+                        FontAwesomeIcons.check,
+                        color: greenColor,
+                      ),
+                      SizedBox(
+                        width: 5.w,
+                      ),
+                      Text(
+                        'Approuver',
+                        style: TextStyle(
+                            color: lightColor,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18.sp),
+                      )
+                    ],
                   ),
-                  Text(
-                    'Commentaires',
-                    style: TextStyle(
-                        color: lightColor,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 18.sp),
-                  )
-                ],
-              ),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => CommentsScreen(
-                            id,
-                            review,
-                            userImage,
-                            name,
-                            time,
-                            allowedToDelete,
-                            entreprise,
-                            message,
-                            lien,
-                            images)));
-              },
+                ),
+              ],
             ),
             SizedBox(
               height: 10.h,

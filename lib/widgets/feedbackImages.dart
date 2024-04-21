@@ -5,11 +5,13 @@ import 'package:chihebapp2/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:insta_image_viewer/insta_image_viewer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class FeedbackImages extends StatefulWidget {
+  final double height;
   final List images;
-  FeedbackImages(this.images);
+  FeedbackImages(this.height,this.images);
 
   @override
   State<FeedbackImages> createState() => _FeedbackImagesState();
@@ -32,7 +34,7 @@ class _FeedbackImagesState extends State<FeedbackImages> {
               return buildImage("$url/uploads/${widget.images[index]}", index);
             },
             options: CarouselOptions(
-                height: 300.h,
+                height: widget.height.h,
                 autoPlay: true,
                 enableInfiniteScroll: false,
                 autoPlayAnimationDuration: Duration(seconds: 2),
@@ -57,4 +59,4 @@ class _FeedbackImagesState extends State<FeedbackImages> {
 
 Widget buildImage(String urlImage, int index) => Container(
     constraints: BoxConstraints(maxHeight: 400.h),
-    child: Image.network(urlImage, fit: BoxFit.cover));
+    child: InstaImageViewer(child: Image.network(urlImage, fit: BoxFit.cover)));

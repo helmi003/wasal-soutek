@@ -18,13 +18,13 @@ class AcceptOrDecline extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(16.r))),
       title: Text(title,
           style: TextStyle(
-            fontSize: 25.sp,
+            fontSize: 22.sp,
             color: redColor,
             fontWeight: FontWeight.bold,
           )),
       content: Text(message,
           style: TextStyle(
-              fontSize: 18.sp, fontWeight: FontWeight.w500, color: lightColor)),
+              fontSize: 16.sp, fontWeight: FontWeight.w500, color: lightColor)),
       actions: <Widget>[
         TextButton(
             onPressed: onTap,
@@ -38,7 +38,7 @@ class AcceptOrDecline extends StatelessWidget {
             ),
             child: Text("Oui",
                 style: TextStyle(
-                    fontSize: 18.sp,
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.w500,
                     color: lightColor))),
         TextButton(
@@ -55,7 +55,7 @@ class AcceptOrDecline extends StatelessWidget {
             ),
             child: Text("Non",
                 style: TextStyle(
-                    fontSize: 18.sp,
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
                     color: lightColor)))
       ],

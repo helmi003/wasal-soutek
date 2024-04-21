@@ -61,7 +61,7 @@ class _GoodFeedbacksScreenState extends State<GoodFeedbacksScreen> {
       drawer: DrawerWidget(),
       body: Column(
         children: [
-          SearchWidget(search, "Rechercher un post", (value) {
+          SearchWidget(search, (value) {
             setState(() {
               if (value.isEmpty) {
                 filteredFeedbacks = feedbacks;

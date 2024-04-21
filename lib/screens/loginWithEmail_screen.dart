@@ -12,7 +12,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:provider/provider.dart';
 
-
 class LoginWithEmailScreen extends StatefulWidget {
   static const routeName = "/LoginWithEmailScreen";
   const LoginWithEmailScreen({super.key});
@@ -27,7 +26,7 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
   String emailError = "";
   String passwordError = "";
   bool isLoading = false;
-  bool obscureText = false;
+  bool obscureText = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +41,8 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
               ),
               SizedBox(height: 10.h),
               TextFieldWidget(emailController, 'E-mail', emailError),
-              PasswordFieldWidget(passwordController, 'Mot de passe', passwordError,obscureText,hideText),
+              PasswordFieldWidget(passwordController, 'Mot de passe',
+                  passwordError, obscureText, hideText),
               ButtonWidget(login, 'Se connectez', isLoading)
             ],
           ),
@@ -92,7 +92,7 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
         showDialog(
           context: context,
           builder: ((context) {
-            return ErrorPopUp("Alert", onError.toString(),redColor);
+            return ErrorPopUp("Alert", onError.toString(), redColor);
           }),
         );
       } finally {

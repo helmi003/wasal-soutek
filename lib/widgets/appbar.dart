@@ -14,11 +14,5 @@ PreferredSizeWidget appBar(BuildContext context, String text) {
             fontSize: 25.sp, fontWeight: FontWeight.w500, color: lightColor),
       ),
       centerTitle: true,
-      shape: ContinuousRectangleBorder(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20.r),
-          bottomRight: Radius.circular(20.r),
-        ),
-      ),
       elevation: 0);
 }

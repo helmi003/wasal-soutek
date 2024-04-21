@@ -51,7 +51,7 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 10.w),
               child: Text(
-                "Ici, vous pouvez ajouter votre avis que ce soit pour ou contre un service, fourniseur, entreprise...etc avec les memebres de cette application.",
+                "Ici, vous pouvez ajouter votre avis que ce soit pour ou contre un service, fourniseur, entreprise...etc.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontSize: 18.sp,
@@ -61,8 +61,8 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
             ),
             SizedBox(height: 20.h),
             TextFieldWidget(
-                companyName, "Nom d'association *", companyNameError),
-            TextFieldWidget(link, "Lien d'association", ""),
+                companyName, "Nom d'entreprise *", companyNameError),
+            TextFieldWidget(link, "Lien d'entreprise", ""),
             DropDownWidget(items, (value) {
               setState(() {
                 selectedItem = value;
@@ -100,74 +100,129 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
                     ),
                     height: 110.h,
                     child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: photos.length,
-                      itemBuilder: (context, index) => Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 2.w),
-                        child: GestureDetector(
-                          onTap: () {
-                            removePhoto(index);
-                          },
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Image.file(
-                                File(photos[index].path),
-                                width: 100.w,
-                                height: 100.h,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: photos.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index == photos.length) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 2.w, vertical: 2.h),
+                              child: GestureDetector(
+                                  onTap: () {
+                                    removePhoto(index);
+                                  },
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      showModalBottomSheet(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.only(
+                                            topRight: Radius.circular(16.r),
+                                            topLeft: Radius.circular(16.r),
+                                          ),
+                                        ),
+                                        backgroundColor: primaryColor,
+                                        context: context,
+                                        builder: ((builder) =>
+                                            BottomSheetCamera(
+                                              () {
+                                                takephoto(
+                                                  ImageSource.camera,
+                                                );
+                                              },
+                                              () {
+                                                takephoto(
+                                                  ImageSource.gallery,
+                                                );
+                                              },
+                                            )),
+                                      );
+                                    },
+                                    child: Container(
+                                      height: 100.h,
+                                      width: 80.h,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10.r),
+                                          color: silverColor),
+                                      child: Icon(
+                                        FontAwesomeIcons.plus,
+                                        color: darkColor,
+                                        size: 25.h,
+                                      ),
+                                    ),
+                                  )),
+                            );
+                          }
+                          return Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 2.w),
+                            child: GestureDetector(
+                              onTap: () {
+                                removePhoto(index);
+                              },
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Image.file(
+                                    File(photos[index].path),
+                                    width: 100.w,
+                                    height: 100.h,
+                                  ),
+                                  Icon(
+                                    FontAwesomeIcons.xmark,
+                                    color: redColor,
+                                    size: 25.h,
+                                  ),
+                                ],
                               ),
-                              Icon(
-                                FontAwesomeIcons.xmark,
-                                color: redColor,
-                                size: 25.h,
-                              ),
-                            ],
+                            ),
+                          );
+                        }),
+                  ),
+            photos.isNotEmpty
+                ? SizedBox()
+                : GestureDetector(
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/images/picture.png',
+                          width: 200.w,
+                        ),
+                        Icon(
+                          FontAwesomeIcons.plus,
+                          color: lightColor,
+                          size: 40.h,
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      showModalBottomSheet(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(16.r),
+                            topLeft: Radius.circular(16.r),
                           ),
                         ),
-                      ),
-                    ),
+                        backgroundColor: primaryColor,
+                        context: context,
+                        builder: ((builder) => BottomSheetCamera(
+                              () {
+                                takephoto(
+                                  ImageSource.camera,
+                                );
+                              },
+                              () {
+                                takephoto(
+                                  ImageSource.gallery,
+                                );
+                              },
+                            )),
+                      );
+                    },
                   ),
-            GestureDetector(
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Image.asset(
-                    'assets/images/picture.png',
-                    width: 200.w,
-                  ),
-                  Icon(
-                    FontAwesomeIcons.plus,
-                    color: lightColor,
-                    size: 40.h,
-                  ),
-                ],
-              ),
-              onTap: () {
-                showModalBottomSheet(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(16.r),
-                      topLeft: Radius.circular(16.r),
-                    ),
-                  ),
-                  backgroundColor: primaryColor,
-                  context: context,
-                  builder: ((builder) => BottomSheetCamera(
-                        () {
-                          takephoto(
-                            ImageSource.camera,
-                          );
-                        },
-                        () {
-                          takephoto(
-                            ImageSource.gallery,
-                          );
-                        },
-                      )),
-                );
-              },
-            ),
-            Padding(
+            photos.isNotEmpty
+                ? SizedBox()
+                : Padding(
               padding: EdgeInsets.all(10),
               child: Text(
                 "cliquez sur l'image ci-dessus pour ajouter quelques photos",

@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_build_context_synchronously
 
 import 'package:chihebapp2/Services/feedbackProvider.dart';
-import 'package:chihebapp2/Services/userProvider.dart';
 import 'package:chihebapp2/models/feedbackModel.dart';
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:chihebapp2/widgets/acceptOrDeclineWidget.dart';
@@ -10,21 +9,21 @@ import 'package:chihebapp2/widgets/drawerWidget.dart';
 import 'package:chihebapp2/widgets/errorMessage.dart';
 import 'package:chihebapp2/widgets/errorPopUp.dart';
 import 'package:chihebapp2/widgets/loadingWidget.dart';
-import 'package:chihebapp2/widgets/postWidgte.dart';
+import 'package:chihebapp2/widgets/pendingPostWidget.dart';
 import 'package:chihebapp2/widgets/searchWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
-class BadFeedbacksScreen extends StatefulWidget {
-  const BadFeedbacksScreen({super.key});
+class PendingFeedbacksScreen extends StatefulWidget {
+  const PendingFeedbacksScreen({super.key});
 
   @override
-  State<BadFeedbacksScreen> createState() => _BadFeedbacksScreenState();
+  State<PendingFeedbacksScreen> createState() => _PendingFeedbacksScreenState();
 }
 
-class _BadFeedbacksScreenState extends State<BadFeedbacksScreen> {
+class _PendingFeedbacksScreenState extends State<PendingFeedbacksScreen> {
   TextEditingController search = TextEditingController();
   bool isLoading = false;
   List<FeedbackModel> filteredFeedbacks = [];
@@ -41,7 +40,7 @@ class _BadFeedbacksScreenState extends State<BadFeedbacksScreen> {
         isLoading = true;
       });
       filteredFeedbacks =
-          await context.read<FeedbackProvider>().getBadFeedbacks();
+          await context.read<FeedbackProvider>().getNonApprovedFeedbacks();
       feedbacks = filteredFeedbacks;
       setState(() {
         isLoading = false;
@@ -53,11 +52,9 @@ class _BadFeedbacksScreenState extends State<BadFeedbacksScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> user =
-        Provider.of<UserProvider>(context, listen: false).user;
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: appBar(context, 'Avis négatifs'),
+      appBar: appBar(context, 'Posts en attente'),
       drawer: DrawerWidget(),
       body: Column(
         children: [
@@ -90,23 +87,15 @@ class _BadFeedbacksScreenState extends State<BadFeedbacksScreen> {
                             itemCount: filteredFeedbacks.length,
                             itemBuilder: (context, index) {
                               FeedbackModel feedback = filteredFeedbacks[index];
-                              return PostWidget(
-                                  feedback.id,
-                                  feedback.review,
+                              return PendingPostWidget(
                                   feedback.user.image,
                                   feedback.user.displayName,
                                   formatDate(feedback.createdAt),
-                                  feedback.user.id == user['user']['_id'] ||
-                                      user['user']['role'] == 'admin', () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => AcceptOrDecline(
-                                            "Êtes vous sûr?",
-                                            "Voulez-vous vraiment supprimer ce post?",
-                                            () {
-                                          deletePost(feedback.id);
-                                        }));
-                              }, feedback.name, feedback.message, feedback.link,
+                                  () {approvePost(feedback.id);},
+                                  () {refusePost(feedback.id);},
+                                  feedback.name,
+                                  feedback.message,
+                                  feedback.link,
                                   feedback.images);
                             },
                           ),
@@ -120,22 +109,61 @@ class _BadFeedbacksScreenState extends State<BadFeedbacksScreen> {
     return DateFormat('HH:mm - dd/MM/yyyy').format(DateTime.parse(date));
   }
 
-  deletePost(String id) async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      await context.read<FeedbackProvider>().deleteFeedback(id).then((value) {
-        Navigator.of(context).pop();
-        fetchFeedbacks().then((value) => setState(() {
-              isLoading = false;
-            }));
-      });
-    } catch (err) {
-      showDialog(
+  refusePost(String id) {
+    showDialog(
         context: context,
-        builder: (context) => ErrorPopUp('Alert', err.toString(), redColor),
-      );
-    }
+        builder: (context) => AcceptOrDecline(
+                "Êtes vous sûr?", "Voulez-vous vraiment refuser ce post?",
+                () async {
+              setState(() {
+                isLoading = true;
+              });
+              try {
+                await context
+                    .read<FeedbackProvider>()
+                    .deleteFeedback(id)
+                    .then((value) {
+                  Navigator.of(context).pop();
+                  fetchFeedbacks().then((value) => setState(() {
+                        isLoading = false;
+                      }));
+                });
+              } catch (err) {
+                showDialog(
+                  context: context,
+                  builder: (context) =>
+                      ErrorPopUp('Alert', err.toString(), redColor),
+                );
+              }
+            }));
+  }
+
+  approvePost(String id) {
+    showDialog(
+        context: context,
+        builder: (context) => AcceptOrDecline(
+                "Êtes vous sûr?", "Voulez-vous vraiment approuver ce post?",
+                () async {
+              setState(() {
+                isLoading = true;
+              });
+              try {
+                await context
+                    .read<FeedbackProvider>()
+                    .approveFeedback(id)
+                    .then((value) {
+                  Navigator.of(context).pop();
+                  fetchFeedbacks().then((value) => setState(() {
+                        isLoading = false;
+                      }));
+                });
+              } catch (err) {
+                showDialog(
+                  context: context,
+                  builder: (context) =>
+                      ErrorPopUp('Alert', err.toString(), redColor),
+                );
+              }
+            }));
   }
 }

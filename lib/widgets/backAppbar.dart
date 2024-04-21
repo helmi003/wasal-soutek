@@ -23,11 +23,5 @@ PreferredSizeWidget backAppBar(BuildContext context, String text) {
           Navigator.of(context).pop();
         },
       ),
-      shape: ContinuousRectangleBorder(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
-        ),
-      ),
       elevation: 0);
 }

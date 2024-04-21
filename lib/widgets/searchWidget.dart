@@ -6,9 +6,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SearchWidget extends StatelessWidget {
   final TextEditingController search;
-  final String hint;
   final Function(String) onSubmitted;
-  const SearchWidget(this.search, this.hint, this.onSubmitted);
+  const SearchWidget(this.search, this.onSubmitted);
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +32,7 @@ class SearchWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15.r),
                     borderSide: BorderSide(
                         color: darkColor.withOpacity(0.7), width: 2.w)),
-                hintText: hint,
+                hintText: "Rechercher un post par pseudo",
                 hintStyle: TextStyle(
                     color: darkColor.withOpacity(0.5), fontSize: 15.sp),
                 suffixIcon: Icon(

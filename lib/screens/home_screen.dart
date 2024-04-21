@@ -2,10 +2,12 @@
 
 import 'package:chihebapp2/screens/tab_screen.dart';
 import 'package:chihebapp2/utils/colors.dart';
-import 'package:chihebapp2/widgets/homeAppbar.dart';
+import 'package:chihebapp2/widgets/appbar.dart';
+import 'package:chihebapp2/widgets/drawerWidget.dart';
 import 'package:chihebapp2/widgets/iconButtonWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = "/HomeScreen";
@@ -21,7 +23,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: homeAppBar(context),
+      appBar: appBar(context, "Acceuil"),
+      drawer: DrawerWidget(),
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: Column(
@@ -55,17 +58,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       // if (user.role == "admin") ...[
-                        TextSpan(
-                          text:
-                              ", et aussi ajouter/consulter des utilisateurs en cliquant sur le bouton ",
+                      TextSpan(
+                        text:
+                            ", et aussi ajouter/consulter des utilisateurs en cliquant sur le bouton ",
+                      ),
+                      WidgetSpan(
+                        child: Icon(
+                          Icons.groups,
+                          color: primaryColor,
+                          size: 30,
                         ),
-                        WidgetSpan(
-                          child: Icon(
-                            Icons.groups,
-                            color: primaryColor,
-                            size: 30,
-                          ),
-                        ),
+                      ),
                       // ],
                     ],
                     style: TextStyle(
@@ -76,13 +79,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 10.h),
-            IconButtonWidget('List des réclamation', Icons.list,false ,() {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => TabScreen()));
-            }),
+            Spacer(),
+            SvgPicture.asset(
+              'assets/images/undraw_feedback.svg',
+              height: 250.h,
+              semanticsLabel: 'undraw_feedback',
+            ),
             SizedBox(
               height: 10.h,
             )

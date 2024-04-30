@@ -4,7 +4,6 @@ import 'package:chihebapp2/Services/commentsProvider.dart';
 import 'package:chihebapp2/Services/feedbackProvider.dart';
 import 'package:chihebapp2/Services/userProvider.dart';
 import 'package:chihebapp2/screens/home_screen.dart';
-import 'package:chihebapp2/screens/loginWithEmail_screen.dart';
 import 'package:chihebapp2/screens/login_screen.dart';
 import 'package:chihebapp2/screens/spalsh_screen.dart';
 import 'package:chihebapp2/screens/tab_screen.dart';
@@ -44,7 +43,6 @@ class MyApp extends StatelessWidget {
             home: SplashScreen(),
             routes: {
               LoginScreen.routeName: (ctx) => LoginScreen(),
-              LoginWithEmailScreen.routeName: (ctx) => LoginWithEmailScreen(),
               HomeScreen.routeName: (ctx) => HomeScreen(),
               TabScreen.routeName: (ctx) => TabScreen(),
             },

@@ -49,6 +49,7 @@ dependencies:
   email_validator: ^2.1.17
   insta_image_viewer: ^1.0.4
   flutter_svg: ^2.0.10+1
+  cached_network_image: ^3.3.1
 
 
   # The following adds the Cupertino Icons font to your application.

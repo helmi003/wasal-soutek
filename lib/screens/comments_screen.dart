@@ -131,17 +131,10 @@ class _CommentsScreenState extends State<CommentsScreen> {
                         )
                       : null,
                 ),
-                Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                    child: Text(
-                      widget.message,
-                      style: TextStyle(color: darkColor),
-                    )),
                 if (widget.lien != "")
                   Padding(
                       padding: EdgeInsets.only(
-                          left: 20.w, right: 20.w, bottom: 10.h),
+                          left: 20.w, right: 20.w),
                       child: RichText(
                           overflow: TextOverflow.ellipsis,
                           text: TextSpan(
@@ -174,6 +167,13 @@ class _CommentsScreenState extends State<CommentsScreen> {
                                     },
                                 )
                               ]))),
+                Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                    child: Text(
+                      widget.message,
+                      style: TextStyle(color: darkColor),
+                    )),
                 FeedbackImages(300, widget.images),
                 SizedBox(
                   height: 10.h,

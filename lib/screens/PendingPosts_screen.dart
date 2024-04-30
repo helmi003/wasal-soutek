@@ -91,6 +91,7 @@ class _PendingFeedbacksScreenState extends State<PendingFeedbacksScreen> {
                                   feedback.user.image,
                                   feedback.user.displayName,
                                   formatDate(feedback.createdAt),
+                                  feedback.review,
                                   () {approvePost(feedback.id);},
                                   () {refusePost(feedback.id);},
                                   feedback.name,

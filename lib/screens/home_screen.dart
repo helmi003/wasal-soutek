@@ -1,13 +1,13 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, sort_child_properties_last
 
-import 'package:chihebapp2/screens/tab_screen.dart';
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:chihebapp2/widgets/appbar.dart';
 import 'package:chihebapp2/widgets/drawerWidget.dart';
-import 'package:chihebapp2/widgets/iconButtonWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = "/HomeScreen";
@@ -25,70 +25,119 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: bgColor,
       appBar: appBar(context, "Acceuil"),
       drawer: DrawerWidget(),
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            Card(
-              color: secondaryColor.withOpacity(0.7),
-              child: Container(
-                padding: EdgeInsets.all(10),
-                child: RichText(
-                  textAlign: TextAlign.justify,
-                  text: TextSpan(
-                    text:
-                        "Dans cette application, vous pouvez ajouter des réclamations en cliquant sur le bouton ",
-                    children: [
-                      WidgetSpan(
-                        child: Icon(
-                          Icons.format_list_bulleted_add,
-                          color: primaryColor,
-                          size: 30,
-                        ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(10),
+          child: Column(
+            children: [
+              RichText(
+                textAlign: TextAlign.justify,
+                text: TextSpan(
+                  text:
+                      "Dans cette application, exprimez-vous en partageant vos retours d'expérience sur différents services, produits, et entreprises. Que ce soit une expérience positive à partager ",
+                  children: [
+                    WidgetSpan(
+                      child: Icon(
+                        FontAwesomeIcons.faceGrinHearts,
+                        color: primaryColor,
+                        size: 30,
                       ),
-                      TextSpan(
-                        text:
-                            ", et également consulter la liste des réclamations en cliquant sur ",
-                      ),
-                      WidgetSpan(
-                        child: Icon(
-                          Icons.list,
-                          color: primaryColor,
-                          size: 30,
-                        ),
-                      ),
-                      // if (user.role == "admin") ...[
-                      TextSpan(
-                        text:
-                            ", et aussi ajouter/consulter des utilisateurs en cliquant sur le bouton ",
-                      ),
-                      WidgetSpan(
-                        child: Icon(
-                          Icons.groups,
-                          color: primaryColor,
-                          size: 30,
-                        ),
-                      ),
-                      // ],
-                    ],
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      color: lightColor,
                     ),
+                    TextSpan(
+                      text: " ou une déception à exprimer ",
+                    ),
+                    WidgetSpan(
+                      child: Icon(
+                        FontAwesomeIcons.faceSadCry,
+                        color: primaryColor,
+                        size: 30,
+                      ),
+                    ),
+                    TextSpan(
+                      text:
+                          ", votre voix compte pour aider les autres utilisateurs à faire des choix éclairés.",
+                    ),
+                  ],
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    color: darkColor,
                   ),
                 ),
               ),
-            ),
-            Spacer(),
-            SvgPicture.asset(
-              'assets/images/undraw_feedback.svg',
-              height: 250.h,
-              semanticsLabel: 'undraw_feedback',
-            ),
-            SizedBox(
-              height: 10.h,
-            )
-          ],
+              RichText(
+                textAlign: TextAlign.justify,
+                text: TextSpan(
+                  text: "Explorez les feedbacks des autres utilisateurs ",
+                  children: [
+                    WidgetSpan(
+                      child: Icon(
+                        FontAwesomeIcons.peopleGroup,
+                        color: primaryColor,
+                        size: 30,
+                      ),
+                    ),
+                  ],
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    color: darkColor,
+                  ),
+                ),
+              ),
+              RichText(
+                textAlign: TextAlign.justify,
+                text: TextSpan(
+                  text:
+                      "Engagez-vous avec la communauté en laissant des commentaires  ",
+                  children: [
+                    WidgetSpan(
+                      child: Icon(
+                        FontAwesomeIcons.comments,
+                        color: primaryColor,
+                        size: 30,
+                      ),
+                    ),
+                  ],
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    color: darkColor,
+                  ),
+                ),
+              ),
+              RichText(
+                textAlign: TextAlign.justify,
+                text: TextSpan(
+                  text: "Enrichissez vos feedbacks en ajoutant des photos  ",
+                  children: [
+                    WidgetSpan(
+                      child: Icon(
+                        FontAwesomeIcons.image,
+                        color: primaryColor,
+                        size: 30,
+                      ),
+                    ),
+                    TextSpan(
+                      text: " pour illustrer votre expérience.",
+                    ),
+                  ],
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    color: darkColor,
+                  ),
+                ),
+              ),
+              SizedBox(height: 10.h),
+              Center(
+                child: SvgPicture.asset(
+                  'assets/images/undraw_feedback.svg',
+                  height: 250.h,
+                  semanticsLabel: 'undraw_feedback',
+                ),
+              ),
+              SizedBox(
+                height: 10.h,
+              )
+            ],
+          ),
         ),
       ),
     );

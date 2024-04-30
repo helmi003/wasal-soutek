@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, sort_child_properties_last
+// ignore_for_file: prefer_const_constructors, sort_child_properties_last, use_key_in_widget_constructors, prefer_const_constructors_in_immutables
 
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +14,7 @@ class ButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 220.w,
+      width: 200.w,
       height: 50.h,
       child: TextButton(
         style: ButtonStyle(
@@ -35,7 +35,7 @@ class ButtonWidget extends StatelessWidget {
                   label,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 20.sp, // Use screenutil for responsive font sizes
+                    fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
                     color: lightColor,
                   ),

@@ -44,6 +44,34 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+  Future<void> register(
+      String displayName, String email, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$url/user/register"),
+        body: {
+          "email": email,
+          "password": password,
+          "displayName": displayName
+        },
+      );
+      final body = json.decode(response.body);
+      if (response.statusCode == 201) {
+        notifyListeners();
+      } else {
+        throw HttpException2(body['message']);
+      }
+    } on SocketException {
+      throw HttpException2("Impossible d'accéder à Internet!");
+    } on FormatException {
+      throw HttpException2("Une erreur est survenue");
+    } on StateError {
+      throw HttpException2("Une erreur est survenue");
+    } catch (exception) {
+      throw HttpException2(exception.toString());
+    }
+  }
+
   // Future<void> login(String email,String password) async {
   //   try {
   //     final response = await http.get(Uri.parse("$url/user/auth/login"));
@@ -87,5 +115,40 @@ class UserProvider with ChangeNotifier {
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.clear();
+  }
+
+  Future<void> updateProfile(String displayName, File? photo) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      token = prefs.getString('token')!;
+      final request =
+          http.MultipartRequest('PUT', Uri.parse('$url/user'));
+      request.headers['Authorization'] = 'Bearer $token';
+      request.fields['displayName'] = displayName;
+      if (photo != null) {
+        request.files
+            .add(await http.MultipartFile.fromPath('image', photo.path));
+      }
+      final response = await request.send();
+      final body = await response.stream.bytesToString();
+      if (response.statusCode == 200) {
+        SharedPreferences pref = await SharedPreferences.getInstance();
+        pref.setString("user", json.encode(body));
+        user = json.decode(body);
+        print(body);
+        print(user);
+        notifyListeners();
+      } else {
+        throw HttpException2(body);
+      }
+    } on SocketException {
+      throw HttpException2("Impossible d'accéder à Internet!");
+    } on FormatException {
+      throw HttpException2("Une erreur est survenue");
+    } on StateError {
+      throw HttpException2("Une erreur est survenue");
+    } catch (exception) {
+      throw HttpException2(exception.toString());
+    }
   }
 }

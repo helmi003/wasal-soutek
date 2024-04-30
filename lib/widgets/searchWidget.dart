@@ -32,7 +32,7 @@ class SearchWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15.r),
                     borderSide: BorderSide(
                         color: darkColor.withOpacity(0.7), width: 2.w)),
-                hintText: "Rechercher un post par pseudo",
+                hintText: "Rechercher un post par nom",
                 hintStyle: TextStyle(
                     color: darkColor.withOpacity(0.5), fontSize: 15.sp),
                 suffixIcon: Icon(

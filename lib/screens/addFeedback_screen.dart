@@ -36,7 +36,6 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
   String selectedItem = "";
   String selectedItemError = "";
   List<XFile> photos = [];
-  String photo = "";
   ImagePicker imagePicker = ImagePicker();
   @override
   Widget build(BuildContext context) {
@@ -81,7 +80,7 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
                           clearAll();
                         },
                         child: Text(
-                          'Clear all',
+                          'Effacer tout',
                           style: TextStyle(
                               fontSize: 18.sp,
                               fontWeight: FontWeight.w500,
@@ -223,16 +222,16 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
             photos.isNotEmpty
                 ? SizedBox()
                 : Padding(
-              padding: EdgeInsets.all(10),
-              child: Text(
-                "cliquez sur l'image ci-dessus pour ajouter quelques photos",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w500,
-                    color: darkColor),
-              ),
-            ),
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                      "cliquez sur l'image ci-dessus pour ajouter quelques photos",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w500,
+                          color: darkColor),
+                    ),
+                  ),
             SizedBox(height: 10.h),
             ButtonWidget(addFeedback, "Ajouter", isLoading),
             SizedBox(height: 10.h),
@@ -317,21 +316,13 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
             message.clear();
             clearAll();
           });
-          if (review) {
-            showDialog(
-              context: context,
-              builder: ((context) => ErrorPopUp(
-                  "Succés", "Votre post est publié avec succès", greenColor)),
-            );
-          } else {
-            showDialog(
-              context: context,
-              builder: ((context) => ErrorPopUp(
-                  "Succés",
-                  "Votre post sera en attente pour le moment jusqu'à ce que l'administrateur l'approuve",
-                  greenColor)),
-            );
-          }
+          showDialog(
+            context: context,
+            builder: ((context) => ErrorPopUp(
+                "Succés",
+                "Votre post sera en attente pour le moment jusqu'à ce que l'administrateur l'approuve",
+                greenColor)),
+          );
         });
       } catch (onError) {
         showDialog(
@@ -339,7 +330,6 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
           builder: ((context) =>
               ErrorPopUp("Alert", onError.toString(), redColor)),
         );
-        print(onError.toString());
       } finally {
         setState(() {
           isLoading = false;

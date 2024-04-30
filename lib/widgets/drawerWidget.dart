@@ -3,8 +3,9 @@ import 'package:chihebapp2/Services/userProvider.dart';
 import 'package:chihebapp2/screens/PendingPosts_screen.dart';
 import 'package:chihebapp2/screens/about_screen.dart';
 import 'package:chihebapp2/screens/home_screen.dart';
-import 'package:chihebapp2/screens/loginWithEmail_screen.dart';
+import 'package:chihebapp2/screens/login_screen.dart';
 import 'package:chihebapp2/screens/tab_screen.dart';
+import 'package:chihebapp2/screens/updateProfile_screen.dart';
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:chihebapp2/widgets/acceptOrDeclineWidget.dart';
 import 'package:chihebapp2/widgets/drawerItemsWidget.dart';
@@ -73,6 +74,12 @@ class DrawerWidget extends StatelessWidget {
               indent: 20.w,
               endIndent: 20.w,
             ),
+            DrawerItemWidget("Modifier profil", FontAwesomeIcons.userPen, () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => UpdateProfileScreen()));
+              }),
             ListTile(
               title: Text("Se déconnecter",
                   style:
@@ -93,7 +100,7 @@ class DrawerWidget extends StatelessWidget {
                     await context.read<UserProvider>().logout().then((value) =>
                         Navigator.pushNamedAndRemoveUntil(
                             context,
-                            LoginWithEmailScreen.routeName,
+                            LoginScreen.routeName,
                             (Route<dynamic> route) => false));
                   }),
                 );

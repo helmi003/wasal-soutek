@@ -14,14 +14,24 @@ class PendingPostWidget extends StatelessWidget {
   final String userImage;
   final String name;
   final String time;
+  final bool review;
   final VoidCallback approve;
   final VoidCallback refuse;
   final String entreprise;
   final String message;
   final String lien;
   final List images;
-  const PendingPostWidget(this.userImage, this.name, this.time, this.approve,
-      this.refuse, this.entreprise, this.message, this.lien, this.images);
+  const PendingPostWidget(
+      this.userImage,
+      this.name,
+      this.time,
+      this.review,
+      this.approve,
+      this.refuse,
+      this.entreprise,
+      this.message,
+      this.lien,
+      this.images);
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +65,23 @@ class PendingPostWidget extends StatelessWidget {
               ),
             ),
             Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                child: RichText(
+                    overflow: TextOverflow.ellipsis,
+                    text: TextSpan(
+                        text: "Type: ",
+                        style: TextStyle(
+                            color: darkColor, fontWeight: FontWeight.bold),
+                        children: [
+                          TextSpan(
+                            style: TextStyle(
+                                color: lightColor, fontWeight: FontWeight.w400),
+                            text: review
+                                ? "Je recommande"
+                                : "Je ne recommande pas",
+                          )
+                        ]))),
+            Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10.w),
                 child: RichText(
                     overflow: TextOverflow.ellipsis,
@@ -71,8 +98,7 @@ class PendingPostWidget extends StatelessWidget {
                         ]))),
             if (lien != "")
               Padding(
-                  padding:
-                      EdgeInsets.only(left: 10.w, right: 10.w, top: 5.h),
+                  padding: EdgeInsets.only(left: 10.w, right: 10.w, top: 5.h),
                   child: RichText(
                       overflow: TextOverflow.ellipsis,
                       text: TextSpan(

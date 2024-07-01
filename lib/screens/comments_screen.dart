@@ -7,6 +7,7 @@ import 'package:chihebapp2/models/comment.dart';
 import 'package:chihebapp2/screens/tab_screen.dart';
 import 'package:chihebapp2/widgets/acceptOrDeclineWidget.dart';
 import 'package:chihebapp2/widgets/addComment.dart';
+import 'package:chihebapp2/widgets/circularLoadingWidget.dart';
 import 'package:chihebapp2/widgets/errorMessage.dart';
 import 'package:chihebapp2/widgets/feedbackImages.dart';
 import 'package:chihebapp2/utils/colors.dart';
@@ -35,6 +36,7 @@ class CommentsScreen extends StatefulWidget {
   final String message;
   final String lien;
   final List images;
+
   CommentsScreen(
       this.id,
       this.review,
@@ -55,12 +57,23 @@ class _CommentsScreenState extends State<CommentsScreen> {
   TextEditingController messageController = TextEditingController();
   final url = dotenv.env['API_URL'];
   bool isLoading = false;
+  bool isLoadingMore = false;
   String photo = "";
   List<CommentModel> comments = [];
+  int currentPage = 1;
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     fetchComments();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          !isLoadingMore) {
+        loadMoreComments();
+      }
+    });
   }
 
   Future<void> fetchComments() async {
@@ -68,12 +81,38 @@ class _CommentsScreenState extends State<CommentsScreen> {
       setState(() {
         isLoading = true;
       });
-      comments = await context.read<CommentProvider>().getComments(widget.id);
+      comments = await context
+          .read<CommentProvider>()
+          .getComments(widget.id, currentPage);
       setState(() {
         isLoading = false;
       });
     } catch (error) {
       print(error);
+    }
+  }
+
+  Future<void> loadMoreComments() async {
+    try {
+      setState(() {
+        isLoadingMore = true;
+        currentPage++;
+      });
+      List<CommentModel> newComments = await context
+          .read<CommentProvider>()
+          .getComments(widget.id, currentPage);
+      newComments = newComments
+          .where((newComment) => !comments
+              .any((existingComment) => existingComment.id == newComment.id))
+          .toList();
+      setState(() {
+        comments.addAll(newComments);
+        isLoadingMore = false;
+      });
+    } catch (error) {
+      setState(() {
+        isLoadingMore = false;
+      });
     }
   }
 
@@ -87,6 +126,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
       body: Stack(
         children: [
           SingleChildScrollView(
+            controller: _scrollController,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -133,8 +173,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                 ),
                 if (widget.lien != "")
                   Padding(
-                      padding: EdgeInsets.only(
-                          left: 20.w, right: 20.w),
+                      padding: EdgeInsets.only(left: 20.w, right: 20.w),
                       child: RichText(
                           overflow: TextOverflow.ellipsis,
                           text: TextSpan(
@@ -181,7 +220,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                 Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10.w),
                     child: Text(
-                      'Comentaires:',
+                      'Commentaires:',
                       style: TextStyle(
                           fontSize: 25.sp,
                           color: primaryColor,
@@ -194,52 +233,56 @@ class _CommentsScreenState extends State<CommentsScreen> {
                     : ListView.builder(
                         physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: comments.length,
-                        itemBuilder: (context, index) => user['user']['_id'] ==
-                                comments[index].user.id
-                            ? YourMessageWidget(
-                                comments[index].message,
-                                formatDate(comments[index].createdAt),
-                                comments[index].show, () {
+                        itemCount: comments.length + (isLoadingMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index == comments.length) {
+                            return CircularLoadingWidget();
+                          }
+                          CommentModel comment = comments[index];
+                          if (user['user']['_id'] == comment.user.id) {
+                            return YourMessageWidget(
+                                comment.message,
+                                formatDate(comment.createdAt),
+                                comment.show, () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AcceptOrDecline(
+                                          "Êtes vous sûr?",
+                                          "Voulez-vous vraiment supprimer ce commentaire?",
+                                          () {
+                                        deleteComment(comment.id);
+                                      }));
+                            }, () {
+                              setState(() {
+                                comment.show = !comment.show;
+                              });
+                            });
+                          } else {
+                            return PeopleCommnetWidget(
+                                comment.user.displayName,
+                                comment.user.image,
+                                comment.message,
+                                formatDate(comment.createdAt),
+                                comment.show, () {
+                              if (user['user']['role'] == "admin") {
                                 showDialog(
                                     context: context,
                                     builder: (context) => AcceptOrDecline(
                                             "Êtes vous sûr?",
                                             "Voulez-vous vraiment supprimer ce commentaire?",
                                             () {
-                                          deleteComment(comments[index].id);
+                                          deleteComment(comment.id);
                                         }));
-                              }, () {
-                                setState(() {
-                                  Provider.of<CommentProvider>(context,
-                                          listen: false)
-                                      .toggleShow(comments[index]);
-                                });
-                              })
-                            : PeopleCommnetWidget(
-                                comments[index].user.displayName,
-                                comments[index].user.image,
-                                comments[index].message,
-                                formatDate(comments[index].createdAt),
-                                comments[index].show, () {
-                                if (user['user']['role'] == "admin") {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => AcceptOrDecline(
-                                              "Êtes vous sûr?",
-                                              "Voulez-vous vraiment supprimer ce commentaire?",
-                                              () {
-                                            deleteComment(comments[index].id);
-                                          }));
-                                }
-                              }, () {
-                                setState(() {
-                                  Provider.of<CommentProvider>(context,
-                                          listen: false)
-                                      .toggleShow(comments[index]);
-                                });
-                              }),
-                      ),
+                              }
+                            }, () {
+                              setState(() {
+                                Provider.of<CommentProvider>(context,
+                                        listen: false)
+                                    .toggleShow(comment);
+                              });
+                            });
+                          }
+                        }),
                 SizedBox(
                   height: 70.h,
                 )
@@ -259,7 +302,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
   }
 
   addCommentaire() async {
-    if (messageController.text.isEmpty) {
+    if (messageController.text.trim().isEmpty) {
       showDialog(
           context: context,
           builder: (context) => ErrorPopUp(
@@ -274,10 +317,10 @@ class _CommentsScreenState extends State<CommentsScreen> {
             .addComment(widget.id, messageController.text)
             .then((value) {
           setState(() {
+            comments.add(value);
             messageController.clear();
           });
         });
-        fetchComments();
       } catch (onError) {
         showDialog(
           context: context,
@@ -297,15 +340,11 @@ class _CommentsScreenState extends State<CommentsScreen> {
   }
 
   deleteComment(String id) async {
-    setState(() {
-      isLoading = true;
-    });
     try {
-      await context.read<CommentProvider>().deleteComment(id).then((value) {
-        Navigator.of(context).pop();
-        fetchComments().then((value) => setState(() {
-              isLoading = false;
-            }));
+      await context.read<CommentProvider>().deleteComment(id);
+      Navigator.of(context).pop();
+      setState(() {
+        comments.removeWhere((com) => com.id == id);
       });
     } catch (err) {
       showDialog(
@@ -327,10 +366,11 @@ class _CommentsScreenState extends State<CommentsScreen> {
         if (widget.review) {
           await context
               .read<FeedbackProvider>()
-              .getGoodFeedbacks()
+              .getGoodFeedbacks(1)
               .then((value) {
             Navigator.of(context).pop();
-            Navigator.pushReplacementNamed(context, TabScreen.routeName);
+            Navigator.pushReplacementNamed(context, TabScreen.routeName,
+                arguments: 0);
             showDialog(
                 context: context,
                 builder: (context) => ErrorPopUp('Succés',
@@ -339,10 +379,11 @@ class _CommentsScreenState extends State<CommentsScreen> {
         } else {
           await context
               .read<FeedbackProvider>()
-              .getBadFeedbacks()
+              .getBadFeedbacks(1)
               .then((value) {
             Navigator.of(context).pop();
-            Navigator.pushReplacementNamed(context, TabScreen.routeName);
+            Navigator.pushReplacementNamed(context, TabScreen.routeName,
+                arguments: 2);
             showDialog(
                 context: context,
                 builder: (context) => ErrorPopUp('Succés',

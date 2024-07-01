@@ -56,7 +56,7 @@ class DrawerWidget extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => TabScreen()));
+                        builder: (context) => TabScreen(page:0)));
               }),
             if (user['user']['role'] == "admin")
               DrawerItemWidget("Posts en attente", FontAwesomeIcons.listCheck, () {

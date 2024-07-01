@@ -1,12 +1,11 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, sort_child_properties_last
 
+import 'package:chihebapp2/screens/tab_screen.dart';
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:chihebapp2/widgets/appbar.dart';
-import 'package:chihebapp2/widgets/drawerWidget.dart';
+import 'package:chihebapp2/widgets/buttonWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,7 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: bgColor,
       appBar: appBar(context, "Acceuil"),
-      drawer: DrawerWidget(),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(10),
@@ -127,11 +125,18 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 10.h),
               Center(
-                child: SvgPicture.asset(
-                  'assets/images/undraw_feedback.svg',
-                  height: 250.h,
-                  semanticsLabel: 'undraw_feedback',
+                child: Image.asset(
+                  'assets/images/chat.png',
+                  height: 200.h,
                 ),
+              ),
+              SizedBox(height: 10.h),
+              Center(
+                child: ButtonWidget(() {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => TabScreen(page: 0),
+                  ));
+                }, "Continue", false),
               ),
               SizedBox(
                 height: 10.h,

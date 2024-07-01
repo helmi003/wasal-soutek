@@ -9,16 +9,19 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 
 class TabScreen extends StatefulWidget {
   static const routeName = "/TabScreen";
+  final int page;
+  TabScreen({required this.page});
   @override
   State<TabScreen> createState() => _TabScreenState();
 }
 
 class _TabScreenState extends State<TabScreen> {
-  int currentIndex = 0;
+  late int currentIndex;
   late List<Widget> children;
 
   @override
   void initState() {
+    currentIndex = widget.page;
     children = [
       GoodFeedbacksScreen(),
       AddFeedbackScreen(),

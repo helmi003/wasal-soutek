@@ -14,8 +14,8 @@ class ButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 200.w,
-      height: 50.h,
+      width: 150.w,
+      height: 40.h,
       child: TextButton(
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all<Color>(primaryColor),
@@ -25,7 +25,7 @@ class ButtonWidget extends StatelessWidget {
             ),
           ),
         ),
-        onPressed: onTap,
+        onPressed: !isLoading ? onTap : () {},
         child: Center(
           child: isLoading
               ? CircularProgressIndicator(

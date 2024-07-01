@@ -29,7 +29,6 @@ class UserProvider with ChangeNotifier {
         user = JwtDecoder.decode(token);
         pref.setString("user", json.encode(user));
         notifyListeners();
-        print(body);
       } else {
         throw HttpException2(body['message']);
       }
@@ -135,8 +134,6 @@ class UserProvider with ChangeNotifier {
         SharedPreferences pref = await SharedPreferences.getInstance();
         pref.setString("user", json.encode(body));
         user = json.decode(body);
-        print(body);
-        print(user);
         notifyListeners();
       } else {
         throw HttpException2(body);

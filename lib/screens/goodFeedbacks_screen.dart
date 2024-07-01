@@ -6,6 +6,7 @@ import 'package:chihebapp2/models/feedbackModel.dart';
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:chihebapp2/widgets/acceptOrDeclineWidget.dart';
 import 'package:chihebapp2/widgets/appbar.dart';
+import 'package:chihebapp2/widgets/circularLoadingWidget.dart';
 import 'package:chihebapp2/widgets/drawerWidget.dart';
 import 'package:chihebapp2/widgets/errorMessage.dart';
 import 'package:chihebapp2/widgets/errorPopUp.dart';
@@ -27,27 +28,59 @@ class GoodFeedbacksScreen extends StatefulWidget {
 class _GoodFeedbacksScreenState extends State<GoodFeedbacksScreen> {
   TextEditingController search = TextEditingController();
   bool isLoading = false;
+  bool isLoadingMore = false;
   List<FeedbackModel> filteredFeedbacks = [];
   List<FeedbackModel> feedbacks = [];
+  int currentPage = 1;
+  ScrollController _scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
     fetchFeedbacks();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          !isLoadingMore) {
+        loadMoreFeedbacks();
+      }
+    });
   }
 
   Future<void> fetchFeedbacks() async {
     try {
       setState(() {
         isLoading = true;
+        currentPage = 1;
       });
       filteredFeedbacks =
-          await context.read<FeedbackProvider>().getGoodFeedbacks();
+          await context.read<FeedbackProvider>().getGoodFeedbacks(currentPage);
       feedbacks = filteredFeedbacks;
       setState(() {
         isLoading = false;
       });
     } catch (error) {
       print(error);
+    }
+  }
+
+  Future<void> loadMoreFeedbacks() async {
+    try {
+      setState(() {
+        isLoadingMore = true;
+        currentPage++;
+      });
+      List<FeedbackModel> fetchedFeedbacks =
+          await context.read<FeedbackProvider>().getGoodFeedbacks(currentPage);
+      setState(() {
+        feedbacks.addAll(fetchedFeedbacks);
+        filteredFeedbacks = feedbacks;
+        isLoadingMore = false;
+      });
+    } catch (error) {
+      print(error);
+      setState(() {
+        isLoadingMore = false;
+      });
     }
   }
 
@@ -87,8 +120,13 @@ class _GoodFeedbacksScreenState extends State<GoodFeedbacksScreen> {
                       : Expanded(
                           child: ListView.builder(
                             shrinkWrap: true,
-                            itemCount: filteredFeedbacks.length,
+                            controller: _scrollController,
+                            itemCount: filteredFeedbacks.length +
+                                (isLoadingMore ? 1 : 0),
                             itemBuilder: (context, index) {
+                              if (index == filteredFeedbacks.length) {
+                                return CircularLoadingWidget();
+                              }
                               FeedbackModel feedback = filteredFeedbacks[index];
                               return PostWidget(
                                   feedback.id,
@@ -121,15 +159,11 @@ class _GoodFeedbacksScreenState extends State<GoodFeedbacksScreen> {
   }
 
   deletePost(String id) async {
-    setState(() {
-      isLoading = true;
-    });
     try {
-      await context.read<FeedbackProvider>().deleteFeedback(id).then((value) {
-        Navigator.of(context).pop();
-        fetchFeedbacks().then((value) => setState(() {
-              isLoading = false;
-            }));
+      await context.read<FeedbackProvider>().deleteFeedback(id);
+      Navigator.of(context).pop();
+      setState(() {
+        feedbacks.removeWhere((feed) => feed.id == id);
       });
     } catch (err) {
       showDialog(

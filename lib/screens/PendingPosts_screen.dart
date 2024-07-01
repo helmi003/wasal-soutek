@@ -5,6 +5,7 @@ import 'package:chihebapp2/models/feedbackModel.dart';
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:chihebapp2/widgets/acceptOrDeclineWidget.dart';
 import 'package:chihebapp2/widgets/appbar.dart';
+import 'package:chihebapp2/widgets/circularLoadingWidget.dart';
 import 'package:chihebapp2/widgets/drawerWidget.dart';
 import 'package:chihebapp2/widgets/errorMessage.dart';
 import 'package:chihebapp2/widgets/errorPopUp.dart';
@@ -26,12 +27,22 @@ class PendingFeedbacksScreen extends StatefulWidget {
 class _PendingFeedbacksScreenState extends State<PendingFeedbacksScreen> {
   TextEditingController search = TextEditingController();
   bool isLoading = false;
+  bool isLoadingMore = false;
   List<FeedbackModel> filteredFeedbacks = [];
   List<FeedbackModel> feedbacks = [];
+  int currentPage = 1;
+  ScrollController _scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
     fetchFeedbacks();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          !isLoadingMore) {
+        loadMoreFeedbacks();
+      }
+    });
   }
 
   Future<void> fetchFeedbacks() async {
@@ -40,13 +51,34 @@ class _PendingFeedbacksScreenState extends State<PendingFeedbacksScreen> {
         isLoading = true;
       });
       filteredFeedbacks =
-          await context.read<FeedbackProvider>().getNonApprovedFeedbacks();
+          await context.read<FeedbackProvider>().getNonApprovedFeedbacks(currentPage);
       feedbacks = filteredFeedbacks;
       setState(() {
         isLoading = false;
       });
     } catch (error) {
       print(error);
+    }
+  }
+
+  Future<void> loadMoreFeedbacks() async {
+    try {
+      setState(() {
+        isLoadingMore = true;
+        currentPage++;
+      });
+      List<FeedbackModel> fetchedFeedbacks =
+          await context.read<FeedbackProvider>().getNonApprovedFeedbacks(currentPage);
+      setState(() {
+        feedbacks.addAll(fetchedFeedbacks);
+        filteredFeedbacks = feedbacks;
+        isLoadingMore = false;
+      });
+    } catch (error) {
+      print(error);
+      setState(() {
+        isLoadingMore = false;
+      });
     }
   }
 
@@ -84,8 +116,13 @@ class _PendingFeedbacksScreenState extends State<PendingFeedbacksScreen> {
                       : Expanded(
                           child: ListView.builder(
                             shrinkWrap: true,
-                            itemCount: filteredFeedbacks.length,
+                            controller: _scrollController,
+                            itemCount: filteredFeedbacks.length +
+                                (isLoadingMore ? 1 : 0),
                             itemBuilder: (context, index) {
+                              if (index == filteredFeedbacks.length) {
+                                return CircularLoadingWidget();
+                              }
                               FeedbackModel feedback = filteredFeedbacks[index];
                               return PendingPostWidget(
                                   feedback.user.image,

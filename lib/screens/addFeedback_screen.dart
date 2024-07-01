@@ -32,6 +32,7 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
   String companyNameError = "";
   String messageError = "";
   bool isLoading = false;
+  bool review = false;
   List items = ["Je recommande", "Je ne recommande pas"];
   String selectedItem = "";
   String selectedItemError = "";
@@ -77,7 +78,7 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
                       alignment: Alignment.centerRight,
                       child: GestureDetector(
                         onTap: () {
-                          clearAll();
+                          clearAllPhotos();
                         },
                         child: Text(
                           'Effacer tout',
@@ -265,7 +266,7 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
     });
   }
 
-  void clearAll() {
+  void clearAllPhotos() {
     setState(() {
       photos = [];
     });
@@ -301,9 +302,14 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
         isLoading = true;
       });
       try {
-        bool review = false;
         if (selectedItem == "Je recommande") {
-          review = true;
+          setState(() {
+            review = true;
+          });
+        }else{
+          setState(() {
+            review = false;
+          });
         }
         await context
             .read<FeedbackProvider>()
@@ -314,7 +320,7 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
             companyName.clear();
             link.clear();
             message.clear();
-            clearAll();
+            clearAllPhotos();
           });
           showDialog(
             context: context,

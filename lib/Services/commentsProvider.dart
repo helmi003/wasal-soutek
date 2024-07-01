@@ -14,7 +14,7 @@ class CommentProvider with ChangeNotifier {
   String token = "";
   List<CommentModel> comments = [];
 
-  Future<void> addComment(String id, String message) async {
+  Future<CommentModel> addComment(String id, String message) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       token = prefs.getString('token')!;
@@ -25,10 +25,9 @@ class CommentProvider with ChangeNotifier {
           },
           body: json.encode({"message": message}));
       final body = json.decode(response.body);
-      print(body);
-
       if (response.statusCode == 200 || response.statusCode == 201) {
         notifyListeners();
+        return CommentModel.fromJson(body);
       } else {
         throw HttpException2(body);
       }
@@ -49,7 +48,6 @@ class CommentProvider with ChangeNotifier {
         'Authorization': "Bearer $token",
       });
       final body = json.decode(response.body);
-      print(body);
       if (response.statusCode == 200) {
         notifyListeners();
         return true;
@@ -67,16 +65,16 @@ class CommentProvider with ChangeNotifier {
     }
   }
 
-  Future<List<CommentModel>> getComments(String id) async {
+  Future<List<CommentModel>> getComments(String id, int page) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       token = prefs.getString('token')!;
-      final response = await http.get(Uri.parse("$url/comment/$id"), headers: {
+      final response =
+          await http.get(Uri.parse("$url/comment/$id/$page"), headers: {
         "Content-Type": "application/json",
         'Authorization': "Bearer $token",
       });
       final body = json.decode(response.body);
-      print(body);
       if (response.statusCode == 200) {
         comments =
             (body as List).map((json) => CommentModel.fromJson(json)).toList();
@@ -100,6 +98,19 @@ class CommentProvider with ChangeNotifier {
     final index = comments.indexWhere((c) => c.id == comment.id);
     if (index != -1) {
       comments[index].show = !comments[index].show;
+      notifyListeners();
     }
+  }
+
+  void removeComment(CommentModel comment) {
+    final index = comments.indexWhere((c) => c.id == comment.id);
+    if (index != -1) {
+      comments.removeAt(index);
+    }
+  }
+
+  void addNewComments(List<CommentModel> newComments) {
+    comments.addAll(newComments);
+    notifyListeners();
   }
 }

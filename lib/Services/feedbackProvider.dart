@@ -55,18 +55,24 @@ class FeedbackProvider with ChangeNotifier {
     }
   }
 
-  Future<List<FeedbackModel>> getGoodFeedbacks() async {
+  Future<List<FeedbackModel>> getGoodFeedbacks(int page) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       token = prefs.getString('token')!;
-      final response = await http.get(Uri.parse("$url/review/good"), headers: {
+      final response =
+          await http.get(Uri.parse("$url/review/good/$page"), headers: {
         "Content-Type": "application/json",
         'Authorization': "Bearer $token",
       });
       final body = json.decode(response.body);
       if (response.statusCode == 200) {
-        goodFeedbacks =
+        final newFeedbacks =
             (body as List).map((json) => FeedbackModel.fromJson(json)).toList();
+        if (page == 1) {
+          goodFeedbacks = newFeedbacks;
+        } else {
+          goodFeedbacks.addAll(newFeedbacks);
+        }
         notifyListeners();
         return goodFeedbacks;
       } else {
@@ -83,11 +89,12 @@ class FeedbackProvider with ChangeNotifier {
     }
   }
 
-  Future<List<FeedbackModel>> getBadFeedbacks() async {
+  Future<List<FeedbackModel>> getBadFeedbacks(int page) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       token = prefs.getString('token')!;
-      final response = await http.get(Uri.parse("$url/review/bad"), headers: {
+      final response =
+          await http.get(Uri.parse("$url/review/bad/$page"), headers: {
         "Content-Type": "application/json",
         'Authorization': "Bearer $token",
       });
@@ -111,16 +118,16 @@ class FeedbackProvider with ChangeNotifier {
     }
   }
 
-  Future<List<FeedbackModel>> getNonApprovedFeedbacks() async {
+  Future<List<FeedbackModel>> getNonApprovedFeedbacks(int page) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       token = prefs.getString('token')!;
-      final response = await http.get(Uri.parse("$url/review/list"), headers: {
+      final response =
+          await http.get(Uri.parse("$url/review/list/$page"), headers: {
         "Content-Type": "application/json",
         'Authorization': "Bearer $token",
       });
       final body = json.decode(response.body);
-      print(body);
       if (response.statusCode == 200) {
         pendingFeedbacks =
             (body as List).map((json) => FeedbackModel.fromJson(json)).toList();
@@ -131,8 +138,7 @@ class FeedbackProvider with ChangeNotifier {
       }
     } on SocketException {
       throw HttpException2("Impossible d'accéder à Internet!");
-    } 
-    on FormatException {
+    } on FormatException {
       throw HttpException2("Une erreur est survenue");
     } on StateError {
       throw HttpException2("Une erreur est survenue");
@@ -145,7 +151,8 @@ class FeedbackProvider with ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       token = prefs.getString('token')!;
-      final response = await http.delete(Uri.parse("$url/review/$id"), headers: {
+      final response =
+          await http.delete(Uri.parse("$url/review/$id"), headers: {
         "Content-Type": "application/json",
         'Authorization': "Bearer $token",
       });
@@ -171,7 +178,8 @@ class FeedbackProvider with ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       token = prefs.getString('token')!;
-      final response = await http.put(Uri.parse("$url/review/approve/$id"), headers: {
+      final response =
+          await http.put(Uri.parse("$url/review/approve/$id"), headers: {
         "Content-Type": "application/json",
         'Authorization': "Bearer $token",
       });
@@ -193,11 +201,27 @@ class FeedbackProvider with ChangeNotifier {
     }
   }
 
-  updateGoodFeedbacks(List<FeedbackModel> feedbacks){
+  updateGoodFeedbacks(List<FeedbackModel> feedbacks) {
     goodFeedbacks = feedbacks;
   }
 
-  updateBadFeedbacks(List<FeedbackModel> feedbacks){
+  updateBadFeedbacks(List<FeedbackModel> feedbacks) {
     badFeedbacks = feedbacks;
+  }
+
+  void removeGoodFeedback(String id) {
+    final index = goodFeedbacks.indexWhere((f) => f.id == id);
+    if (index != -1) {
+      goodFeedbacks.removeAt(index);
+      notifyListeners();
+    }
+  }
+
+  void removeBadFeedback(String id) {
+    final index = badFeedbacks.indexWhere((f) => f.id == id);
+    if (index != -1) {
+      badFeedbacks.removeAt(index);
+      notifyListeners();
+    }
   }
 }

@@ -12,7 +12,7 @@ class AddComment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 70.h,
+      height: 60.h,
       decoration: BoxDecoration(
           color: primaryColor,
           borderRadius: BorderRadius.only(
@@ -27,13 +27,13 @@ class AddComment extends StatelessWidget {
                 cursorColor: lightColor,
                 controller: message,
                 decoration: InputDecoration(
-                  fillColor: Colors.transparent,
+                  fillColor: lightColor.withOpacity(0.2),
                   filled: true,
                   border: InputBorder.none,
                   hintText: 'Message...',
                   hintStyle: TextStyle(
                       color: lightColor,
-                      fontSize: 16.sp,
+                      fontSize: 15.sp,
                       fontWeight: FontWeight.w500),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(18.r),

@@ -44,7 +44,18 @@ class MyApp extends StatelessWidget {
             routes: {
               LoginScreen.routeName: (ctx) => LoginScreen(),
               HomeScreen.routeName: (ctx) => HomeScreen(),
-              TabScreen.routeName: (ctx) => TabScreen(),
+              TabScreen.routeName: (ctx) => TabScreen(page: 0),
+            },
+            onGenerateRoute: (settings) {
+              if (settings.name == TabScreen.routeName) {
+                final args = settings.arguments as int;
+                return MaterialPageRoute(
+                  builder: (context) {
+                    return TabScreen(page: args);
+                  },
+                );
+              }
+              return null;
             },
           );
         });

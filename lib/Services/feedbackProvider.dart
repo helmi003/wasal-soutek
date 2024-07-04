@@ -147,6 +147,42 @@ class FeedbackProvider with ChangeNotifier {
     }
   }
 
+  Future<List<FeedbackModel>> filterFeedbacks(
+      String filter, String search, int page) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      token = prefs.getString('token')!;
+      final response = await http
+          .get(Uri.parse("$url/review/$filter/$page/$search"), headers: {
+        "Content-Type": "application/json",
+        'Authorization': "Bearer $token",
+      });
+      final body = json.decode(response.body);
+      print(body);
+      if (response.statusCode == 200) {
+        final newFeedbacks =
+            (body as List).map((json) => FeedbackModel.fromJson(json)).toList();
+        if (page == 1) {
+          goodFeedbacks = newFeedbacks;
+        } else {
+          goodFeedbacks.addAll(newFeedbacks);
+        }
+        notifyListeners();
+        return goodFeedbacks;
+      } else {
+        throw HttpException2(body['message']);
+      }
+    } on SocketException {
+      throw HttpException2("Impossible d'accéder à Internet!");
+    } on FormatException {
+      throw HttpException2("Une erreur est survenue");
+    } on StateError {
+      throw HttpException2("Une erreur est survenue");
+    } catch (exception) {
+      throw HttpException2(exception.toString());
+    }
+  }
+
   Future<bool> deleteFeedback(String id) async {
     try {
       final prefs = await SharedPreferences.getInstance();

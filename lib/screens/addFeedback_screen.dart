@@ -67,7 +67,10 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
               setState(() {
                 selectedItem = value;
               });
-            }, 'Choisissez une option *', null, selectedItemError,
+            },
+                'Choisissez une option *',
+                selectedItem == "" ? null : selectedItem,
+                selectedItemError,
                 selectedItem),
             CustomTextArea(message, 'Message...', messageError),
             photos.isEmpty
@@ -306,7 +309,7 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
           setState(() {
             review = true;
           });
-        }else{
+        } else {
           setState(() {
             review = false;
           });
@@ -321,6 +324,7 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
             link.clear();
             message.clear();
             clearAllPhotos();
+            selectedItem = "";
           });
           showDialog(
             context: context,

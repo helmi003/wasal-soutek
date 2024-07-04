@@ -3,6 +3,7 @@
 import 'package:chihebapp2/Services/feedbackProvider.dart';
 import 'package:chihebapp2/Services/userProvider.dart';
 import 'package:chihebapp2/models/feedbackModel.dart';
+import 'package:chihebapp2/screens/search_screen.dart';
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:chihebapp2/widgets/acceptOrDeclineWidget.dart';
 import 'package:chihebapp2/widgets/appbar.dart';
@@ -12,7 +13,7 @@ import 'package:chihebapp2/widgets/errorMessage.dart';
 import 'package:chihebapp2/widgets/errorPopUp.dart';
 import 'package:chihebapp2/widgets/loadingWidget.dart';
 import 'package:chihebapp2/widgets/postWidgte.dart';
-import 'package:chihebapp2/widgets/searchWidget.dart';
+import 'package:chihebapp2/widgets/searchButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +27,6 @@ class BadFeedbacksScreen extends StatefulWidget {
 }
 
 class _BadFeedbacksScreenState extends State<BadFeedbacksScreen> {
-  TextEditingController search = TextEditingController();
   bool isLoading = false;
   bool isLoadingMore = false;
   List<FeedbackModel> filteredFeedbacks = [];
@@ -93,28 +93,16 @@ class _BadFeedbacksScreenState extends State<BadFeedbacksScreen> {
       drawer: DrawerWidget(),
       body: Column(
         children: [
-          SearchWidget(search, (value) {
-            setState(() {
-              if (value.isEmpty) {
-                filteredFeedbacks = feedbacks;
-              } else {
-                filteredFeedbacks = feedbacks
-                    .where((feedback) =>
-                        search.text.isEmpty ||
-                        feedback.name
-                            .toLowerCase()
-                            .contains(search.text.toLowerCase()))
-                    .toList();
-              }
-            });
+          SearchButton(() {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => SearchFeedbacksScreen("negative")));
           }),
           SizedBox(height: 10.h),
           isLoading
               ? Center(child: LoadingWidget())
-              : filteredFeedbacks.isEmpty && search.text != ""
-                  ? Center(
-                      child: ErrorMesssage("Il n'y a pas de correspondance"))
-                  : filteredFeedbacks.isEmpty
+              : filteredFeedbacks.isEmpty
                       ? Center(child: ErrorMesssage('Aucun post disponible.'))
                       : Expanded(
                           child: ListView.builder(
@@ -159,18 +147,24 @@ class _BadFeedbacksScreenState extends State<BadFeedbacksScreen> {
 
   deletePost(String id) async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       await context.read<FeedbackProvider>().deleteFeedback(id);
       Navigator.of(context).pop();
+      fetchFeedbacks();
       setState(() {
-        Provider.of<FeedbackProvider>(context, listen: false)
-            .removeBadFeedback(id);
-        feedbacks.removeWhere((feed) => feed.id == id);
+        currentPage = 1;
       });
     } catch (err) {
       showDialog(
         context: context,
         builder: (context) => ErrorPopUp('Alert', err.toString(), redColor),
       );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 }

@@ -24,7 +24,7 @@ class TextFieldWidget extends StatelessWidget {
                 filled: true,
                 border: InputBorder.none,
                 labelText: label,
-                labelStyle: TextStyle(color: darkColor, fontSize: 16.sp),
+                labelStyle: TextStyle(color: darkColor.withOpacity(0.5), fontSize: 16.sp),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20.r),
                   borderSide: BorderSide(

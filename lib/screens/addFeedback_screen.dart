@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:chihebapp2/Services/feedbackProvider.dart';
+import 'package:chihebapp2/Services/userProvider.dart';
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:chihebapp2/widgets/appbar.dart';
 import 'package:chihebapp2/widgets/buttonWidget.dart';
@@ -38,8 +39,10 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
   String selectedItemError = "";
   List<XFile> photos = [];
   ImagePicker imagePicker = ImagePicker();
+  late Map<String, dynamic> user;
   @override
   Widget build(BuildContext context) {
+    user = Provider.of<UserProvider>(context, listen: false).user;
     return Scaffold(
       backgroundColor: bgColor,
       appBar: appBar(context, 'Ajouter avis'),
@@ -326,13 +329,21 @@ class _AddFeedbackScreenState extends State<AddFeedbackScreen> {
             clearAllPhotos();
             selectedItem = "";
           });
-          showDialog(
-            context: context,
-            builder: ((context) => ErrorPopUp(
-                "Succés",
-                "Votre post sera en attente pour le moment jusqu'à ce que l'administrateur l'approuve",
-                greenColor)),
-          );
+          if (user['user']['role'] == "admin") {
+            showDialog(
+              context: context,
+              builder: ((context) => ErrorPopUp(
+                  "Succés", "Votre post a été ajouté avec succès", greenColor)),
+            );
+          } else {
+            showDialog(
+              context: context,
+              builder: ((context) => ErrorPopUp(
+                  "Succés",
+                  "Votre post sera en attente pour le moment jusqu'à ce que l'administrateur l'approuve",
+                  greenColor)),
+            );
+          }
         });
       } catch (onError) {
         showDialog(

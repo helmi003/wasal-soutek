@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class FeedbackProvider with ChangeNotifier {
   final url = dotenv.env['API_URL'];
   String token = "";
+  List<FeedbackModel> searchedFeedbacks = [];
   List<FeedbackModel> badFeedbacks = [];
   List<FeedbackModel> goodFeedbacks = [];
   List<FeedbackModel> pendingFeedbacks = [];
@@ -163,12 +164,12 @@ class FeedbackProvider with ChangeNotifier {
         final newFeedbacks =
             (body as List).map((json) => FeedbackModel.fromJson(json)).toList();
         if (page == 1) {
-          goodFeedbacks = newFeedbacks;
+          searchedFeedbacks = newFeedbacks;
         } else {
-          goodFeedbacks.addAll(newFeedbacks);
+          searchedFeedbacks.addAll(newFeedbacks);
         }
         notifyListeners();
-        return goodFeedbacks;
+        return searchedFeedbacks;
       } else {
         throw HttpException2(body['message']);
       }
@@ -243,6 +244,14 @@ class FeedbackProvider with ChangeNotifier {
 
   updateBadFeedbacks(List<FeedbackModel> feedbacks) {
     badFeedbacks = feedbacks;
+  }
+
+  void removePendingFeedback(String id) {
+    final index = pendingFeedbacks.indexWhere((f) => f.id == id);
+    if (index != -1) {
+      pendingFeedbacks.removeAt(index);
+      notifyListeners();
+    }
   }
 
   void removeGoodFeedback(String id) {

@@ -28,7 +28,6 @@ class PendingFeedbacksScreen extends StatefulWidget {
 class _PendingFeedbacksScreenState extends State<PendingFeedbacksScreen> {
   bool isLoading = false;
   bool isLoadingMore = false;
-  List<FeedbackModel> filteredFeedbacks = [];
   List<FeedbackModel> feedbacks = [];
   int currentPage = 1;
   ScrollController _scrollController = ScrollController();
@@ -49,11 +48,11 @@ class _PendingFeedbacksScreenState extends State<PendingFeedbacksScreen> {
     try {
       setState(() {
         isLoading = true;
+        currentPage = 1;
       });
-      filteredFeedbacks = await context
+      feedbacks = await context
           .read<FeedbackProvider>()
           .getNonApprovedFeedbacks(currentPage);
-      feedbacks = filteredFeedbacks;
       setState(() {
         isLoading = false;
       });
@@ -73,7 +72,6 @@ class _PendingFeedbacksScreenState extends State<PendingFeedbacksScreen> {
           .getNonApprovedFeedbacks(currentPage);
       setState(() {
         feedbacks.addAll(fetchedFeedbacks);
-        filteredFeedbacks = feedbacks;
         isLoadingMore = false;
       });
     } catch (error) {
@@ -101,21 +99,18 @@ class _PendingFeedbacksScreenState extends State<PendingFeedbacksScreen> {
           SizedBox(height: 10.h),
           isLoading
               ? Center(child: LoadingWidget())
-              : filteredFeedbacks.isEmpty
+              : feedbacks.isEmpty
                   ? Center(child: ErrorMesssage('Aucun post disponible.'))
                   : Expanded(
                       child: ListView.builder(
                         shrinkWrap: true,
                         controller: _scrollController,
-                        itemCount:
-                            filteredFeedbacks.length + (isLoadingMore ? 1 : 0),
+                        itemCount: feedbacks.length + (isLoadingMore ? 1 : 0),
                         itemBuilder: (context, index) {
-                          if (index == filteredFeedbacks.length) {
+                          if (index == feedbacks.length) {
                             return CircularLoadingWidget();
                           }
-                          FeedbackModel feedback = filteredFeedbacks[index];
-                          print(feedback.approved);
-                          print(feedback.name);
+                          FeedbackModel feedback = feedbacks[index];
                           return PendingPostWidget(
                               feedback.user.image,
                               feedback.user.displayName,
@@ -142,7 +137,7 @@ class _PendingFeedbacksScreenState extends State<PendingFeedbacksScreen> {
     showDialog(
         context: context,
         builder: (context) => AcceptOrDecline(
-                "Êtes vous sûr?", "Voulez-vous vraiment refuser ce post?",
+                "Êtes vous sûr?", "Etes-vous sûr de refuser ce post?",
                 () async {
               try {
                 setState(() {
@@ -172,13 +167,14 @@ class _PendingFeedbacksScreenState extends State<PendingFeedbacksScreen> {
     showDialog(
         context: context,
         builder: (context) => AcceptOrDecline(
-                "Êtes vous sûr?", "Voulez-vous vraiment approuver ce post?",
+                "Êtes vous sûr?", "Etes-vous sûr d'approuver ce post?",
                 () async {
               try {
                 setState(() {
                   isLoading = true;
                 });
                 await context.read<FeedbackProvider>().approveFeedback(id);
+                Navigator.of(context).pop();
                 fetchFeedbacks();
                 setState(() {
                   currentPage = 1;

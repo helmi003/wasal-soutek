@@ -3,9 +3,10 @@
 import 'package:chihebapp2/Services/feedbackProvider.dart';
 import 'package:chihebapp2/Services/userProvider.dart';
 import 'package:chihebapp2/models/feedbackModel.dart';
+import 'package:chihebapp2/screens/PendingPosts_screen.dart';
+import 'package:chihebapp2/screens/tab_screen.dart';
 import 'package:chihebapp2/utils/colors.dart';
 import 'package:chihebapp2/widgets/acceptOrDeclineWidget.dart';
-import 'package:chihebapp2/widgets/appbar.dart';
 import 'package:chihebapp2/widgets/circularLoadingWidget.dart';
 import 'package:chihebapp2/widgets/errorMessage.dart';
 import 'package:chihebapp2/widgets/errorPopUp.dart';
@@ -90,7 +91,39 @@ class _SearchFeedbacksScreenState extends State<SearchFeedbacksScreen> {
         Provider.of<UserProvider>(context, listen: false).user;
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: appBar(context, "Recherche"),
+      appBar: AppBar(
+        backgroundColor: primaryColor,
+        iconTheme: IconThemeData(color: lightColor),
+        title: Text(
+          "Recherche",
+          style: TextStyle(
+              fontSize: 25.sp, fontWeight: FontWeight.w500, color: lightColor),
+        ),
+        centerTitle: true,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            size: 28.h,
+            color: lightColor,
+          ),
+          onPressed: () {
+            if (widget.type == "pending") {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => PendingFeedbacksScreen()));
+            } else {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => TabScreen(
+                            page: 0,
+                          )));
+            }
+          },
+        ),
+      ),
       body: Column(
         children: [
           SearchWidget(search, () {
@@ -108,8 +141,8 @@ class _SearchFeedbacksScreenState extends State<SearchFeedbacksScreen> {
                           child: ListView.builder(
                             shrinkWrap: true,
                             controller: _scrollController,
-                            itemCount:
-                                searchFeedbacks.length + (isLoadingMore ? 1 : 0),
+                            itemCount: searchFeedbacks.length +
+                                (isLoadingMore ? 1 : 0),
                             itemBuilder: (context, index) {
                               if (index == searchFeedbacks.length) {
                                 return CircularLoadingWidget();
@@ -130,7 +163,8 @@ class _SearchFeedbacksScreenState extends State<SearchFeedbacksScreen> {
                                                   "Êtes vous sûr?",
                                                   "Voulez-vous vraiment supprimer ce post?",
                                                   () {
-                                                deletePost(feedback.id);
+                                                deletePost(feedback.id,
+                                                    feedback.review);
                                               }));
                                     }, feedback.name, feedback.message,
                                       feedback.link, feedback.images)
@@ -141,7 +175,7 @@ class _SearchFeedbacksScreenState extends State<SearchFeedbacksScreen> {
                                       feedback.review, () {
                                       approvePost(feedback.id);
                                     }, () {
-                                      deletePost(feedback.id);
+                                      refusePost(feedback.id);
                                     }, feedback.name, feedback.message,
                                       feedback.link, feedback.images);
                             },
@@ -156,15 +190,22 @@ class _SearchFeedbacksScreenState extends State<SearchFeedbacksScreen> {
     return DateFormat('HH:mm - dd/MM/yyyy').format(DateTime.parse(date));
   }
 
-  deletePost(String id) async {
+  deletePost(String id, bool review) async {
     try {
       setState(() {
         isLoading = true;
       });
       await context.read<FeedbackProvider>().deleteFeedback(id);
-      Navigator.of(context).pop();
       fetchFeedbacks();
+      Navigator.of(context).pop(true);
       setState(() {
+        if (review) {
+          Provider.of<FeedbackProvider>(context, listen: false)
+              .removeGoodFeedback(id);
+        } else {
+          Provider.of<FeedbackProvider>(context, listen: false)
+              .removeBadFeedback(id);
+        }
         currentPage = 1;
       });
     } catch (err) {
@@ -179,20 +220,55 @@ class _SearchFeedbacksScreenState extends State<SearchFeedbacksScreen> {
     }
   }
 
+  refusePost(String id) {
+    showDialog(
+        context: context,
+        builder: (context) => AcceptOrDecline(
+                "Êtes vous sûr?", "Etes-vous sûr de refuser ce post?",
+                () async {
+              try {
+                setState(() {
+                  isLoading = true;
+                });
+                await context.read<FeedbackProvider>().deleteFeedback(id);
+                Navigator.of(context).pop();
+                fetchFeedbacks();
+                setState(() {
+                  currentPage = 1;
+                  Provider.of<FeedbackProvider>(context, listen: false)
+                      .removePendingFeedback(id);
+                });
+              } catch (err) {
+                showDialog(
+                  context: context,
+                  builder: (context) =>
+                      ErrorPopUp('Alert', err.toString(), redColor),
+                );
+              } finally {
+                setState(() {
+                  isLoading = false;
+                });
+              }
+            }));
+  }
+
   approvePost(String id) {
     showDialog(
         context: context,
         builder: (context) => AcceptOrDecline(
-                "Êtes vous sûr?", "Voulez-vous vraiment approuver ce post?",
+                "Êtes vous sûr?", "Etes-vous sûr d'approuver ce post?",
                 () async {
               try {
                 setState(() {
                   isLoading = true;
                 });
                 await context.read<FeedbackProvider>().approveFeedback(id);
+                Navigator.of(context).pop();
                 fetchFeedbacks();
                 setState(() {
                   currentPage = 1;
+                  Provider.of<FeedbackProvider>(context, listen: false)
+                      .removePendingFeedback(id);
                 });
               } catch (err) {
                 showDialog(

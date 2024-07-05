@@ -30,6 +30,12 @@ class _TabScreenState extends State<TabScreen> {
     super.initState();
   }
 
+  void _onTabChanged(int index) {
+    setState(() {
+      currentIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,11 +58,7 @@ class _TabScreenState extends State<TabScreen> {
           padding: EdgeInsets.all(10),
           iconSize: 30,
           textSize: 30,
-          onTabChange: (index) {
-            setState(() {
-              currentIndex = index;
-            });
-          },
+          onTabChange: _onTabChanged,
           gap: 8,
           tabs: [
             GButton(

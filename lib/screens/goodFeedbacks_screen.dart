@@ -29,7 +29,6 @@ class GoodFeedbacksScreen extends StatefulWidget {
 class _GoodFeedbacksScreenState extends State<GoodFeedbacksScreen> {
   bool isLoading = false;
   bool isLoadingMore = false;
-  List<FeedbackModel> filteredFeedbacks = [];
   List<FeedbackModel> feedbacks = [];
   int currentPage = 1;
   ScrollController _scrollController = ScrollController();
@@ -52,9 +51,8 @@ class _GoodFeedbacksScreenState extends State<GoodFeedbacksScreen> {
         isLoading = true;
         currentPage = 1;
       });
-      filteredFeedbacks =
+      feedbacks =
           await context.read<FeedbackProvider>().getGoodFeedbacks(currentPage);
-      feedbacks = filteredFeedbacks;
       setState(() {
         isLoading = false;
       });
@@ -73,7 +71,6 @@ class _GoodFeedbacksScreenState extends State<GoodFeedbacksScreen> {
           await context.read<FeedbackProvider>().getGoodFeedbacks(currentPage);
       setState(() {
         feedbacks.addAll(fetchedFeedbacks);
-        filteredFeedbacks = feedbacks;
         isLoadingMore = false;
       });
     } catch (error) {
@@ -90,7 +87,7 @@ class _GoodFeedbacksScreenState extends State<GoodFeedbacksScreen> {
         Provider.of<UserProvider>(context, listen: false).user;
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: appBar(context, 'Avis positifs'),
+      appBar: appBar(context, 'Avis positif'),
       drawer: DrawerWidget(),
       body: Column(
         children: [
@@ -103,40 +100,39 @@ class _GoodFeedbacksScreenState extends State<GoodFeedbacksScreen> {
           SizedBox(height: 10.h),
           isLoading
               ? Center(child: LoadingWidget())
-              : filteredFeedbacks.isEmpty
-                      ? Center(child: ErrorMesssage('Aucun post disponible.'))
-                      : Expanded(
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            controller: _scrollController,
-                            itemCount: filteredFeedbacks.length +
-                                (isLoadingMore ? 1 : 0),
-                            itemBuilder: (context, index) {
-                              if (index == filteredFeedbacks.length) {
-                                return CircularLoadingWidget();
-                              }
-                              FeedbackModel feedback = filteredFeedbacks[index];
-                              return PostWidget(
-                                  feedback.id,
-                                  feedback.review,
-                                  feedback.user.image,
-                                  feedback.user.displayName,
-                                  formatDate(feedback.createdAt),
-                                  feedback.user.id == user['user']['_id'] ||
-                                      user['user']['role'] == 'admin', () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => AcceptOrDecline(
-                                            "Êtes vous sûr?",
-                                            "Voulez-vous vraiment supprimer ce post?",
-                                            () {
-                                          deletePost(feedback.id);
-                                        }));
-                              }, feedback.name, feedback.message, feedback.link,
-                                  feedback.images);
-                            },
-                          ),
-                        ),
+              : feedbacks.isEmpty
+                  ? Center(child: ErrorMesssage('Aucun post disponible.'))
+                  : Expanded(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        controller: _scrollController,
+                        itemCount: feedbacks.length + (isLoadingMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index == feedbacks.length) {
+                            return CircularLoadingWidget();
+                          }
+                          FeedbackModel feedback = feedbacks[index];
+                          return PostWidget(
+                              feedback.id,
+                              feedback.review,
+                              feedback.user.image,
+                              feedback.user.displayName,
+                              formatDate(feedback.createdAt),
+                              feedback.user.id == user['user']['_id'] ||
+                                  user['user']['role'] == 'admin', () {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AcceptOrDecline(
+                                        "Êtes vous sûr?",
+                                        "Voulez-vous vraiment supprimer ce post?",
+                                        () {
+                                      deletePost(feedback.id);
+                                    }));
+                          }, feedback.name, feedback.message, feedback.link,
+                              feedback.images);
+                        },
+                      ),
+                    ),
         ],
       ),
     );
